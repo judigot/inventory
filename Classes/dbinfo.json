@@ -1,0 +1,26 @@
+{
+    "username": "root",
+    "password": "",
+    "host": "localhost",
+    "database": [
+        "appjudigot_inventory"
+    ],
+    "table": [
+        "app_user",
+        "app_customer",
+        "app_order",
+        "app_order_product",
+        "app_product",
+		"app_product_category"
+    ],
+    "appSettings": {
+        "customPrice": false
+    },
+    "appName": "Inventory",
+    "appName2": "JV\u2019s School & Office Supply",
+    "appId": [
+        "$2y$10$QcpZCJNa3wjvnBQOyE5ffede6zEIX5PbtNDh4mGOcpMWuwbRLHYM6",
+        "$2y$10$tVGSLUr2cPT3qaVcy/EevunsUSj9AgAg2eLmS0MU3QjcI2CTWErgW",
+        "$2y$10$/5EZ0rcX7zMeWCmvaabctuUweqe35ASFyjLOhG5zLQykqtmJ0YYjK"
+    ]
+}

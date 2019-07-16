@@ -1,0 +1,8 @@
+Escape product names with single/double quotes
+---------------
+Row for annual total on reports
+Custom price table
+Remove _receipt
+
+Print on same page using iframe
+document.getElementById('iframeid').contentWindow.print();

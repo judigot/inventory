@@ -1,0 +1,442 @@
+@import "_main";
+@import "_datatables";
+@import "_quickTable";
+
+/*========================================BOOTSTRAP========================================*/
+.btn,
+.btn:focus {
+  color: $theme;
+  border: 2px solid $theme;
+  outline: none !important;
+  background-color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-radius: 0;
+}
+
+.btn:hover {
+  color: white;
+  background-color: $theme;
+}
+
+.btn:active {
+  box-shadow: inset 0 5px 20px -2px rgba(0, 0, 0, 0.5);
+}
+
+.red,
+.red:focus {
+  color: $blue;
+  border-color: $blue;
+}
+
+.red:hover {
+  color: white;
+  background-color: $blue;
+}
+
+.green,
+.green:focus {
+  color: map-get($blue-shades, shade-1);
+  border-color: map-get($blue-shades, shade-1);
+}
+
+.green:hover {
+  color: white;
+  background-color: map-get($blue-shades, shade-1);
+}
+
+.modal-backdrop {
+  display: none;
+}
+
+.modal {
+  margin-top: -10px;
+}
+
+.modal-dialog {
+  width: max-content;
+  border-radius: 10px 10px 0 0 !important;
+  box-shadow: 0px 0px 10px 5px rgba(0, 0, 0, 0.5);
+}
+
+.title-bar {
+  color: rgba(0, 0, 0, 0.5);
+  font-weight: bold;
+  height: 30px;
+  padding: 5px;
+  border-radius: 10px 10px 0 0 !important;
+  background-color: $theme;
+}
+
+.window-title {
+  padding-right: 5px;
+}
+
+.title-bar-controls {
+  float: right;
+  cursor: pointer;
+}
+
+.modal-header {
+  border-color: #dddddd;
+}
+
+.modal-content {
+  border: none;
+  box-shadow: none;
+  border-radius: 0px;
+}
+
+.modal-footer {
+  border-color: #dddddd;
+}
+
+/*====================NAVIGATION BAR====================*/
+.container {
+  width: 100%;
+}
+
+.navbar {
+  font-weight: bold;
+  /*General navbar size*/
+  zoom: 100%;
+  /*General navbar size*/
+  /*Navbar color*/
+  background-color: $theme;
+  /*Navbar color*/
+}
+
+.navbar,
+.navbar-brand,
+.navbar-nav > li > a {
+  /*Navbar height*/
+  min-height: 50px !important;
+  height: 50px;
+  /*Navbar height*/
+}
+
+.navbar-header>.navbar-brand
+/*Site title*/
+,
+.nav.navbar-nav.navbar-right li a
+
+/*Options*/
+ {
+  background-color: transparent;
+}
+
+.navbar-header>.navbar-brand
+/*Site title*/
+,
+.navbar-header>.navbar-brand:hover,
+.nav.navbar-nav.navbar-right li a
+/*Options*/
+,
+ul.nav.navbar-nav .dropdown.open .dropdown-toggle
+
+/*Active dropdown*/
+ {
+  color: black;
+  background-color: inherit;
+}
+
+.navbar-brand,
+.navbar-nav > li > a,
+.dropdown-menu > li > a {
+  /*General navbar font size*/
+  /*font-size: 10px;*/
+  /*General navbar font size*/
+  /*padding: 10px;*/
+}
+
+ul.nav.navbar-nav .dropdown.open .dropdown-toggle
+
+/*Active dropdown*/
+,
+.collapsing,
+.in {
+  /*    background-color: blue;*/
+}
+
+.dropdown-menu {
+  background-color: $theme;
+}
+
+.dropdown-menu > li > a:hover {
+  cursor: pointer;
+  background-color: map-get($theme-shades, shade-1) !important;
+}
+
+.navbar,
+.collapse,
+.collapsing {
+  border: none;
+}
+
+.collapsing {
+  /*Toggle animation*/
+  /*transition: none;*/
+}
+
+/*====================NAVIGATION BAR====================*/
+/*========================================BOOTSTRAP========================================*/
+.content {
+  margin-top: 50px;
+  /*Margin-top should be equal to navbar height*/
+  display: grid;
+  grid-template-columns: 200px 1fr;
+}
+
+/*====================SIDEBAR====================*/
+#sidebar-content {
+  height: 100%;
+  width: 200px;
+  padding: 5px;
+  background-color: #eeeeee;
+  border-right: 1px solid #dddddd;
+  position: fixed;
+}
+
+#sidebar {
+  z-index: 1;
+}
+
+#sidebar-content > .btn {
+  color: #555555;
+  width: 100%;
+  border: none;
+}
+
+.content-selector {
+  color: #555;
+  padding: 5px;
+  text-align: center;
+  border-radius: 20px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-weight: bold;
+  background-color: transparent;
+}
+
+.new-box {
+  width: 100%;
+  padding: 10px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  background-color: $theme;
+}
+
+.dropdown-content {
+  display: none;
+  padding: 5px;
+  top: calc(0% + 50px);
+  left: 190px;
+  position: fixed;
+  background-color: #eeeeee;
+  box-shadow: 0px 0px 20px 1px rgba(0, 0, 0, 0.2);
+  border-radius: 5px !important;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content .btn {
+  width: 100%;
+  display: block;
+}
+
+/*====================SIDEBAR====================*/
+/*====================MAIN CONTENT====================*/
+.main-content {
+  margin: 5px;
+  overflow: hidden;
+}
+
+.content-box {
+  display: none;
+  text-align: center;
+}
+
+/*====================MAIN CONTENT====================*/
+.modal-body {
+  text-align: center;
+  overflow-y: scroll;
+}
+
+#addProductBox {
+  display: none;
+}
+
+#addProduct {
+  margin: 0%;
+  cursor: pointer;
+}
+#addProduct > .fa-plus {
+  font-size: 20px;
+}
+
+#newProductPrice,
+#newProductCost,
+#newProductInitStock,
+.product-quantity {
+  font-weight: bold;
+  text-align: center;
+}
+
+.currency-symbol {
+  font-size: 20px;
+  font-weight: bold;
+  padding-left: 10px;
+}
+
+#newProductInitStock,
+.product-quantity {
+  width: 50px;
+}
+
+#newProductCost,
+#newProductPrice {
+  width: 100px;
+}
+
+#pricesListTable th,
+#pricesListTable td {
+  text-align: center;
+  border: 1px solid #aaaaaa;
+}
+
+#totalCostBox {
+  float: left;
+  margin-top: 5px;
+  font-size: 20px;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.main-order-table {
+  width: 100%;
+  color: black;
+  font-weight: bold;
+}
+
+.main-order-table th {
+  color: black;
+  background-color: map-get($theme-shades, shade-3);
+}
+
+.main-order-table td {
+  background-color: map-get($theme-shades, shade-4);
+}
+
+#pricesBox td {
+  width: max-content;
+  padding: 5px;
+}
+
+.click-search {
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: map-get($theme-shades, shade-3);
+  border-radius: 5px !important;
+}
+
+.overall-total {
+  margin: 0%;
+  font-style: italic;
+}
+
+#dateRangeBox,
+#activeYearsBox {
+  margin: 5px;
+}
+
+.product-name {
+  // font-size: 20px;
+  // font-weight: bold;
+}
+
+#mainOrder {
+  max-height: 150px;
+  width: 400px;
+  margin: auto;
+  overflow-y: scroll;
+  position: relative;
+}
+
+#mainOrder .order-field {
+  padding: 5px;
+  border-radius: 10px;
+  background-color: map-get($theme-shades, shade-3);
+}
+
+#mainOrder .order-field:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+.order-field .product-quantity {
+  border-radius: 10px;
+}
+
+.order-field .item-discount {
+  text-align: center;
+  font-weight: bold;
+}
+
+#financialReportsBox table {
+  width: 100%;
+}
+
+.stock-notification {
+  display: none;
+  padding: 0px 5px 0px 5px;
+  color: white;
+  border-radius: 2px;
+  transform: scale(0.8);
+}
+
+#lowStockNotification {
+  right: 80%;
+  background-color: map-get($red-shades, shade-3);
+}
+
+#stockNotification {
+  left: 80%;
+  background-color: $red;
+}
+
+.modal-content input:not([type="number"]) {
+  width: 100%;
+}
+
+.no-stock {
+  color: $red;
+}
+#removeProduct {
+  color: $theme;
+  float: right;
+  cursor: pointer;
+}
+.selected-content {
+  color: black;
+  background-color: map-get($theme-shades, shade-4);
+}
+.password-field {
+  text-align: center;
+  font-size: 20px;
+}
+
+.report-type {
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+code {
+  font-size: 15px;
+  color: white;
+  background-color: $orange;
+}

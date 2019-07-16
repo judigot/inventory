@@ -1,0 +1,73 @@
+@page {
+  padding: 0%;
+  margin: 0%;
+  size: portrait;
+}
+
+@font-face {
+  font-family: "FakeReceipt-Regular";
+  src: url("Assets/fonts/fakereceipt.ttf");
+}
+
+html,
+body {
+  padding: 0%;
+  margin: 0%;
+  width: 100%;
+  text-align: center;
+  font-size: 10px;
+  font-family: Lucida Console;
+  /* font-family: "FakeReceipt-Regular"; */
+  -webkit-print-color-adjust: exact;
+}
+
+.description {
+  font-weight: bold;
+}
+
+small {
+  left: calc(80% - 10px);
+  position: fixed;
+  font-size: 10px;
+  font-style: italic;
+}
+
+.grid-container {
+  /* padding: 0px 10px 0px 10px; */
+  padding: 2%;
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.lefty {
+  float: left;
+}
+
+.righty {
+  float: right;
+}
+
+table {
+  width: 100%;
+  margin: auto;
+  border-collapse: collapse;
+}
+
+th {
+  border-top: 1px dashed black;
+  border-bottom: 1px dashed black;
+}
+
+tr {
+  border-bottom: 1px dashed black;
+}
+
+td {
+  /* padding: 10px 0px 10px 0px; */
+}
+
+.ordered-products > thead > tr > th,
+.ordered-products > tbody > tr > td {
+  border: 1px dashed black;
+}

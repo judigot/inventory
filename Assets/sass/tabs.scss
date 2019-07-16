@@ -1,0 +1,28 @@
+@import '_main';
+
+/* Style the tab */
+.tab {
+    overflow: hidden;
+}
+.tab button {
+    width: calc(50% - 2px);
+    min-width: 100px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-weight: bold;
+    background-color: map-get($theme-shades, shade-1);
+    transition: 0.2s;
+    font-size: 20px;
+    border-radius: 10px 10px 0px 0px;
+    pointer-events: none;
+}
+.tab button.activeTab {
+    color: white;
+    background-color: $theme;
+}
+
+#secondTabContent {
+    display: none;
+}

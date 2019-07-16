@@ -1,0 +1,22 @@
+@import "_main";
+
+.tbody-qt {
+  width: 100%;
+  margin: auto;
+  padding: 50px;
+}
+
+.th-qt {
+  background-color: map-get($theme-shades, shade-3);
+}
+
+.th-qt,
+.td-qt {
+  padding: 5px;
+  text-align: center;
+  border: 1px solid map-get($theme-shades, shade-5) !important;
+}
+
+.financialSummary-tbody-qt {
+  width: max-content;
+}
