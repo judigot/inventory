@@ -1,4 +1,4 @@
-# Inventory System with POS and Sales Report
+# Inventory and POS System with Sales Report
 
 Demo: http://inventoryapp.epizy.com/login
 
