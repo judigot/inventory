@@ -1,8 +1,0 @@
-.boo, .chopper {
-  transition: all 1s; }
-
-.flipY {
-  transform: scaleY(-1); }
-
-.rotate360 {
-  transform: rotate(360deg); }
