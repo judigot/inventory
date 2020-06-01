@@ -1,0 +1,14 @@
+Editable quantity in edit order
+When custom date is set and customer searches again, the result is not following the custom date
+Excape html input (Prevent cross-site scripting)
+Deleted products with no stock or low in stock still shows in product notification
+Edited/deleted categories still show up in context menu 
+Inaccurate report on items with discount in production version
+Escape product names with single/double quotes
+---------------
+Row for annual total on reports
+Custom price table
+Remove _receipt
+
+Print on same page using iframe
+document.getElementById('iframeid').contentWindow.print();
