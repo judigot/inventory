@@ -1,3 +1,4 @@
+Show custom price on order preview when ordering (must override default price)
 Editable quantity in edit order
 When custom date is set and customer searches again, the result is not following the custom date
 Excape html input (Prevent cross-site scripting)
