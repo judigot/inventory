@@ -87,7 +87,8 @@ if ($_POST || $_FILES) {
 
             if ($_POST['read'] == "getOrderdItems") {
                 $orderId = $_POST["data"]["orderId"];
-                $products = Database::read($connection, "SELECT `$app_order_product`.`id`, `$app_order_product`.`quantity` AS `QUANTITY`, `$app_product`.`product_name` AS `PRODUCT` FROM `$app_order_product` INNER JOIN `$app_product` ON `$app_order_product`.`product_id`=`$app_product`.`product_id` WHERE `order_id` = '$orderId'");
+                $sql = "SELECT `$app_order_product`.`id`, `$app_product`.`product_name` AS `PRODUCT`, `$app_product`.`product_stock` AS `REMAINING STOCKS`, `$app_order_product`.`quantity` AS `QUANTITY` FROM `$app_order_product` INNER JOIN `$app_product` ON `$app_order_product`.`product_id`=`$app_product`.`product_id` WHERE `order_id` = '$orderId'";
+                $products = Database::read($connection, $sql);
                 echo json_encode($products);
             }
 
