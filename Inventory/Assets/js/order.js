@@ -283,16 +283,13 @@ $(function () {
             order_orderProducts.length = 0;
             order_deletedProducts.length = 0;
             custom_notify("Order was successfully edited.", null);
-            alert(data);
         }).fail(function (data) {
-            alert(data);
-
         });
     });
 });
 
 function order_getEditedItems() {
-    var editedItems = [];
+    var editedItems = null;
     Array.prototype.forEach.call(document.querySelectorAll(".editOrderTable-item"), function (element, i) {
         var value = parseInt(element.getAttribute("value"));
         var newQuantity = parseInt(element.value);
