@@ -120,8 +120,7 @@
 ,
 .nav.navbar-nav.navbar-right li a
 
-/*Options*/
- {
+/*Options*/ {
   background-color: transparent;
 }
 
@@ -134,8 +133,7 @@
 ,
 ul.nav.navbar-nav .dropdown.open .dropdown-toggle
 
-/*Active dropdown*/
- {
+/*Active dropdown*/ {
   color: black;
   background-color: inherit;
 }
@@ -439,4 +437,8 @@ code {
   font-size: 15px;
   color: white;
   background-color: $orange;
+}
+
+td[itemEdited] {
+  text-decoration: underline;
 }
