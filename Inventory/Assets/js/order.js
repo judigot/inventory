@@ -265,6 +265,10 @@ $(function () {
         $(this).parent("td").parent("tr").remove();
     });
 
+    $(document).on("change", ".editOrderTable-item", function (e) {
+        order_markEditedItems();
+    });
+
     $(document).on("click", "#confirmOrderEdits", function (e) {
         $('#editOrderModal').modal('toggle'); // Close modal
         post({
@@ -280,7 +284,35 @@ $(function () {
     });
 });
 
+function order_getEditedItems() {
+    var editedItems = [];
+    Array.prototype.forEach.call(document.querySelectorAll(".editOrderTable-item"), function (element, i) {
+        var value = parseInt(element.getAttribute("value"));
+        var newQuantity = parseInt(element.value);
+        if ((value !== newQuantity)) {
+            var itemAttributes = {};
+            itemAttributes["id"] = element.getAttribute("data-row-id");
+            itemAttributes["oldQuantity"] = element.getAttribute("value");
+            itemAttributes["newQuantity"] = newQuantity;
+            editedItems.push(itemAttributes);
+        }
+    });
+    return editedItems;
+}
+
+function order_markEditedItems() {
+    Array.prototype.forEach.call(document.querySelectorAll(".editOrderTable-item"), function (element, i) {
+        var value = parseInt(element.getAttribute("value"));
+        var newQuantity = parseInt(element.value);
+        var itemName = document.querySelector(`.item-${i}-name`);
+        if ((value !== newQuantity && !itemName.hasAttribute("itemEdited")) || value === newQuantity && itemName.hasAttribute("itemEdited")) {
+            itemName.toggleAttribute("itemEdited");
+        }
+    });
+}
+
 function order_editOrderTable(tableIdentifier, data, tfoot) {
+    var hiddenRows = [0];
     var columnNames = Object.keys(data[0]);
     let theadHTML = tbodyHTML = tfootHTML = "";
     var tableElements = {
@@ -291,7 +323,7 @@ function order_editOrderTable(tableIdentifier, data, tfoot) {
         "tfoot": tableIdentifier + "-tfoot-qt tfoot-qt"
     };
     for (var i = 0; i < columnNames.length; i++) {
-        if (i !== 0) {
+        if (!hiddenRows.includes(i)) {
             theadHTML += `<th class='${tableElements["th"]}'>${columnNames[i]}</th>`;
         }
     }
@@ -301,20 +333,21 @@ function order_editOrderTable(tableIdentifier, data, tfoot) {
         for (var j = 0; j < columnNames.length; j++) {
 
             var rowData = data[i][columnNames[j]] ? data[i][columnNames[j]] : "-";
+            var productStock = data[i][columnNames[2]];
 
-            if (j !== 0) {
-
-                if (j === 1) {
-                    tbodyHTML += `<td class='${tableElements["td"]}'>${rowData}</td>`;
-                    // tbodyHTML += `<td class='${tableElements["td"]}'><input type="number" min="1" value="${rowData}"></td>`;
+            if (!hiddenRows.includes(j)) {
+                if (j === 3) {
+                    // Quantity
+                    var max = productStock == 0 ? rowData : rowData > productStock ? rowData : productStock;
+                    tbodyHTML += `<td class='${tableElements["td"]}'><input class="${tableIdentifier}-item" data-row-id="${data[i][columnNames[0]]}" type="number" min="1" max="${max}" value="${rowData}"></td>`;
+                } else if (j === 1) {
+                    // Add class identifier to item name
+                    tbodyHTML += `<td class='${tableElements["td"]} item-${i}-name'>${rowData}</td>`;
                 } else {
                     tbodyHTML += `<td class='${tableElements["td"]}'>${rowData}</td>`;
                 }
-
             } else if (j === 0) {
-
                 order_orderProducts.push(rowData);
-
             }
         }
         tbodyHTML += `<td class='${tableElements["td"]}'><button data-row-id="${data[i][columnNames[0]]}" class="btn delete-order-product">Delete</button></td>`;
