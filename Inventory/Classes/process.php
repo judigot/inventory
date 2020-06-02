@@ -159,7 +159,7 @@ if ($_POST || $_FILES) {
         }
 
         if (isset($_POST['delete'])) {
-            if ($_POST['delete'] === "deleteOrderItems") {
+            if ($_POST['delete'] === "updateOrderItems") {
                 Database::delete($connection, $app_order_product, "id", $_POST["data"]);
                 echo json_encode(true);
             }

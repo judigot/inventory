@@ -268,7 +268,7 @@ $(function () {
     $(document).on("click", "#confirmOrderEdits", function (e) {
         $('#editOrderModal').modal('toggle'); // Close modal
         post({
-            "delete": "deleteOrderItems",
+            "delete": "updateOrderItems",
             "data": order_deletedProducts
         }, "Classes/process").done(function (data) {
             order_ordersTable.ajax.reload();
