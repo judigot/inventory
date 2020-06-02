@@ -132,6 +132,12 @@ if ($_POST || $_FILES) {
         }
 
         if (isset($_POST['update'])) {
+
+            if ($_POST['update'] === "updateOrderItems") {
+                Database::delete($connection, $app_order_product, "id", $_POST["data"]);
+                echo json_encode(true);
+            }
+
             if ($_POST['update'] === "updateTable") {
 
                 $targetTable = $_POST["tableType"] === "product" ? $app_product : $app_customer;
@@ -159,10 +165,6 @@ if ($_POST || $_FILES) {
         }
 
         if (isset($_POST['delete'])) {
-            if ($_POST['delete'] === "updateOrderItems") {
-                Database::delete($connection, $app_order_product, "id", $_POST["data"]);
-                echo json_encode(true);
-            }
             if ($_POST['delete'] === "toggleRowStatus") {
                 $targetKey = $_POST["tableType"] . "_id";
                 $targetTable = $_POST["tableType"] === "product" ? $app_product : $app_customer;
