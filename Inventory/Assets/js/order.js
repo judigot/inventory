@@ -274,6 +274,7 @@ $(function () {
             order_ordersTable.ajax.reload();
             order_orderProducts.length = 0;
             order_deletedProducts.length = 0;
+            custom_notify("Order was successfully edited.", null);
         }).fail(function (data) {
         });
     });

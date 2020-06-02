@@ -404,3 +404,6 @@ code {
   font-size: 15px;
   color: white;
   background-color: #ff4d4d; }
+
+td[itemEdited] {
+  text-decoration: underline; }
