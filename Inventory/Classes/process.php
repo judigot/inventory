@@ -137,7 +137,29 @@ if ($_POST || $_FILES) {
                 $editedItems = $_POST["data"]["editedItems"];
                 $deletedItems = $_POST["data"]["deletedItems"];
 
-                Database::delete($connection, $app_order_product, "id", $deletedItems);
+                $itemIDs = [];
+                $referenceValues = [];
+
+                // Extract item IDs
+                foreach ($editedItems as $value) {
+                    array_push($itemIDs, $value["id"]);
+                }
+
+                // Extract reference values
+                $referenceValues = array_map(function ($size) {
+                    unset($size["oldQuantity"]);
+                    return $size;
+                }, $editedItems);
+
+                // update quantity
+                // Database::update($connection, $app_order_product, "quantity", null, null, $referenceValues);
+
+                // // modify stock
+                // if (true) {
+                // } else {
+                // }
+
+                // Database::delete($connection, $app_order_product, "id", $deletedItems);
                 echo json_encode(true);
             }
 

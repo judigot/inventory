@@ -270,26 +270,31 @@ $(function () {
     });
 
     $(document).on("click", "#confirmOrderEdits", function (e) {
-        $('#editOrderModal').modal('toggle'); // Close modal
-        var editedItems = order_getEditedItems();
-        post({
-            "update": "updateOrderItems",
-            "data": {
-                "editedItems": editedItems,
-                "deletedItems": order_deletedProducts
-            }
-        }, "Classes/process").done(function (data) {
-            order_ordersTable.ajax.reload();
-            order_orderProducts.length = 0;
-            order_deletedProducts.length = 0;
-            custom_notify("Order was successfully edited.", null);
-        }).fail(function (data) {
-        });
+        // $('#editOrderModal').modal('toggle'); // Close modal
+        editedItems = order_getEditedItems().length ? order_getEditedItems() : false;
+        deletedItems = order_deletedProducts.length !== 0 ? order_deletedProducts : false;
+        if (editedItems || deletedItems) {
+            post({
+                "update": "updateOrderItems",
+                "data": {
+                    "editedItems": editedItems,
+                    "deletedItems": deletedItems
+                }
+            }, "Classes/process").done(function (data) {
+                order_ordersTable.ajax.reload();
+                order_orderProducts.length = 0;
+                order_deletedProducts.length = 0;
+                custom_notify("Order was successfully edited.", null);
+            }).fail(function (data) {
+                alert(JSON.stringify(data));
+            });
+        }
+
     });
 });
 
 function order_getEditedItems() {
-    var editedItems = null;
+    var editedItems = [];
     Array.prototype.forEach.call(document.querySelectorAll(".editOrderTable-item"), function (element, i) {
         var value = parseInt(element.getAttribute("value"));
         var newQuantity = parseInt(element.value);
@@ -306,9 +311,10 @@ function order_getEditedItems() {
 
 function order_markEditedItems() {
     Array.prototype.forEach.call(document.querySelectorAll(".editOrderTable-item"), function (element, i) {
+        var itemId = element.getAttribute("data-row-id");
         var value = parseInt(element.getAttribute("value"));
         var newQuantity = parseInt(element.value);
-        var itemName = document.querySelector(`.item-${i}-name`);
+        var itemName = document.querySelector(`.item-${itemId}-name`);
         if ((value !== newQuantity && !itemName.hasAttribute("itemEdited")) || value === newQuantity && itemName.hasAttribute("itemEdited")) {
             itemName.toggleAttribute("itemEdited");
         }
@@ -346,7 +352,7 @@ function order_editOrderTable(tableIdentifier, data, tfoot) {
                     tbodyHTML += `<td class='${tableElements["td"]}'><input class="${tableIdentifier}-item" data-row-id="${data[i][columnNames[0]]}" type="number" min="1" max="${max}" value="${rowData}"></td>`;
                 } else if (j === 1) {
                     // Add class identifier to item name
-                    tbodyHTML += `<td class='${tableElements["td"]} item-${i}-name'>${rowData}</td>`;
+                    tbodyHTML += `<td class='${tableElements["td"]} item-${data[i][columnNames[0]]}-name'>${rowData}</td>`;
                 } else {
                     tbodyHTML += `<td class='${tableElements["td"]}'>${rowData}</td>`;
                 }

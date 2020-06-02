@@ -97,7 +97,7 @@ class Tools
                     "mother" => $leaf["mother"],
                     "father" => $leaf["father"],
                     "generation" => $generation,
-                    "children" => buildTree($connection, is_array($source) ? ["parent" => $leaf["person_id"], "generations" => $source["generations"]] : $leaf["person_id"], $generation),
+                    "children" => self::buildTree($connection, is_array($source) ? ["parent" => $leaf["person_id"], "generations" => $source["generations"]] : $leaf["person_id"], $generation),
                 );
             }
         }
