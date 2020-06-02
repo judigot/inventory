@@ -44,6 +44,8 @@ if ($_POST || $_FILES) {
                 $products = [];
                 $column = array("order_id", "product_id", "quantity", "product_cost", "product_price", "discount");
                 $sql;
+
+                // Update stock
                 for ($i = 0; $i < count($order); $i++) {
                     $price = $appSettings["customPrice"] ? $customerPrices[$order[$i]["size"] . "_price"] : $order[$i]["price"];
                     $discount = $order[$i]["discount"] ? $order[$i]["discount"] : "0";
@@ -140,26 +142,38 @@ if ($_POST || $_FILES) {
                 $itemIDs = [];
                 $referenceValues = [];
 
-                // Extract item IDs
-                foreach ($editedItems as $value) {
-                    array_push($itemIDs, $value["id"]);
+                if ($editedItems !== "false") {
+                    // Extract item IDs
+                    foreach ($editedItems as $value) {
+                        array_push($itemIDs, $value["id"]);
+                    }
+                    // Extract reference values
+                    $referenceValues = array_map(function ($size) {
+                        unset($size["oldQuantity"]);
+                        return $size;
+                    }, $editedItems);
+
+                    Database::update($connection, $app_order_product, "quantity", null, "id", $referenceValues);
+
+                    // Update stock
+                    $sql = "";
+                    $updatedStocks = [];
+
+                    for ($i = 0; $i < count($editedItems); $i++) {
+                        $itemID = $editedItems[$i]["id"];
+                        $changeInQuantity = abs($editedItems[$i]["newQuantity"] - $editedItems[$i]["oldQuantity"]);
+                        $operation = $editedItems[$i]["oldQuantity"] > $editedItems[$i]["newQuantity"] ? "+" : "-";
+                        $statement = "UPDATE `$app_product` JOIN `$app_order_product` ON (`$app_product`.`product_id`= `$app_order_product`.`product_id`) SET `product_stock` = (`product_stock` $operation $changeInQuantity) WHERE `$app_order_product`.`id` = '$itemID';";
+                        array_push($updatedStocks, $statement);
+                    }
+                    $sql = implode(" ", $updatedStocks);
+                    Database::execute($connection, $sql);
                 }
 
-                // Extract reference values
-                $referenceValues = array_map(function ($size) {
-                    unset($size["oldQuantity"]);
-                    return $size;
-                }, $editedItems);
+                if ($editedItems !== "false") {
+                    Database::delete($connection, $app_order_product, "id", $deletedItems);
+                }
 
-                // update quantity
-                // Database::update($connection, $app_order_product, "quantity", null, null, $referenceValues);
-
-                // // modify stock
-                // if (true) {
-                // } else {
-                // }
-
-                // Database::delete($connection, $app_order_product, "id", $deletedItems);
                 echo json_encode(true);
             }
 

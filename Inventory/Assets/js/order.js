@@ -270,10 +270,11 @@ $(function () {
     });
 
     $(document).on("click", "#confirmOrderEdits", function (e) {
-        // $('#editOrderModal').modal('toggle'); // Close modal
-        editedItems = order_getEditedItems().length ? order_getEditedItems() : false;
-        deletedItems = order_deletedProducts.length !== 0 ? order_deletedProducts : false;
-        if (editedItems || deletedItems) {
+        $('#editOrderModal').modal('toggle'); // Close modal
+        editedItems = order_getEditedItems().length !== 0 ? order_getEditedItems() : "false";
+        deletedItems = order_deletedProducts.length !== 0 ? order_deletedProducts : "false";
+
+        if (editedItems !== "false" || deletedItems !== "false") {
             post({
                 "update": "updateOrderItems",
                 "data": {
@@ -297,8 +298,9 @@ function order_getEditedItems() {
     var editedItems = [];
     Array.prototype.forEach.call(document.querySelectorAll(".editOrderTable-item"), function (element, i) {
         var value = parseInt(element.getAttribute("value"));
+        var remainingStocks = parseInt(element.getAttribute("data-product-stock"));
         var newQuantity = parseInt(element.value);
-        if ((value !== newQuantity)) {
+        if (value !== newQuantity) {
             var itemAttributes = {};
             itemAttributes["id"] = element.getAttribute("data-row-id");
             itemAttributes["oldQuantity"] = element.getAttribute("value");
@@ -348,8 +350,14 @@ function order_editOrderTable(tableIdentifier, data, tfoot) {
             if (!hiddenRows.includes(j)) {
                 if (j === 3) {
                     // Quantity
-                    var max = productStock == 0 ? rowData : rowData > productStock ? rowData : productStock;
-                    tbodyHTML += `<td class='${tableElements["td"]}'><input class="${tableIdentifier}-item" data-row-id="${data[i][columnNames[0]]}" type="number" min="1" max="${max}" value="${rowData}"></td>`;
+
+                    if (productStock == 0) {
+                        max = rowData;
+                    } else {
+                        max = parseInt(productStock) + parseInt(rowData);
+                    }
+
+                    tbodyHTML += `<td class='${tableElements["td"]}'><input class="${tableIdentifier}-item" data-product-stock="${productStock}" data-row-id="${data[i][columnNames[0]]}" type="number" min="1" max="${max}" value="${rowData}"></td>`;
                 } else if (j === 1) {
                     // Add class identifier to item name
                     tbodyHTML += `<td class='${tableElements["td"]} item-${data[i][columnNames[0]]}-name'>${rowData}</td>`;

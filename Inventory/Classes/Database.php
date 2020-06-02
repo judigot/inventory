@@ -71,8 +71,26 @@ class Database
         if ($referenceColumn == null) {
             $sql = "UPDATE `$tableName` SET `$targetColumn` = $newValue;";
         } else {
-            $reference = is_array($referenceValue) ? implode("', '", $referenceValue) : $referenceValue;
-            $sql = "UPDATE `$tableName` SET `$targetColumn` = $newValue WHERE `$tableName`.`$referenceColumn` IN ('$reference');";
+            $reference = $referenceValue;
+            // Check if new  value is array
+            if (is_array($referenceValue)) {
+                // Check if array is associative
+                if (!count(array_filter(array_keys($referenceValue), 'is_string')) > 0) {
+                    $keys = array_keys($reference[0]);
+                    $reference = array_map(function ($value) use ($keys) {
+                        return $value[$keys[0]];
+                    }, $reference);
+                    $reference = "'" . implode("', '", $reference) . "'";
+                    $conditions = array_map(function ($condition) use ($keys, $referenceColumn, $referenceValue) {
+                        return "WHEN `$referenceColumn` = '" . $condition[$keys[0]] . "' THEN '" . $condition[$keys[1]] . "'";
+                    }, $referenceValue);
+                    $newValue = "CASE " . implode(" ", $conditions) . " END";
+                } else {
+                    $reference = "'" . implode("', '", $referenceValue) . "'";
+                }
+            }
+
+            $sql = "UPDATE `$tableName` SET `$targetColumn` = $newValue WHERE `$tableName`.`$referenceColumn` IN ($reference);";
         }
         self::execute($connection, $sql);
     }
