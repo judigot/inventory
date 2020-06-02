@@ -271,15 +271,22 @@ $(function () {
 
     $(document).on("click", "#confirmOrderEdits", function (e) {
         $('#editOrderModal').modal('toggle'); // Close modal
+        var editedItems = order_getEditedItems();
         post({
             "update": "updateOrderItems",
-            "data": order_deletedProducts
+            "data": {
+                "editedItems": editedItems,
+                "deletedItems": order_deletedProducts
+            }
         }, "Classes/process").done(function (data) {
             order_ordersTable.ajax.reload();
             order_orderProducts.length = 0;
             order_deletedProducts.length = 0;
             custom_notify("Order was successfully edited.", null);
+            alert(data);
         }).fail(function (data) {
+            alert(data);
+
         });
     });
 });

@@ -134,7 +134,10 @@ if ($_POST || $_FILES) {
         if (isset($_POST['update'])) {
 
             if ($_POST['update'] === "updateOrderItems") {
-                Database::delete($connection, $app_order_product, "id", $_POST["data"]);
+                // $editedItems = $_POST["data"]["editedItems"];
+                $deletedItems = $_POST["data"]["deletedItems"];
+
+                Database::delete($connection, $app_order_product, "id", $deletedItems);
                 echo json_encode(true);
             }
 
