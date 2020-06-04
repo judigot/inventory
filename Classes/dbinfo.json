@@ -11,11 +11,11 @@
         "app_order",
         "app_order_product",
         "app_product",
-		"app_product_category"
+        "app_product_category"
     ],
     "appSettings": {
-        "customPrice": false
+        "customPrice": true
     },
-    "appName": "Inventory",
+    "appName": "PD Farm",
     "appName2": "JV\u2019s School & Office Supply"
 }

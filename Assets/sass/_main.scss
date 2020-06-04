@@ -1,7 +1,7 @@
-$red: #FF0000;
-$orange: #FF4D4D;
+$red: #ff0000;
+$orange: #ff4d4d;
 $green: complement($red);
-$blue: #4476E4;
+$blue: #4476e4;
 $yellow: invert($blue);
 $magenta: complement($green);
 $cyan: complement($red);
@@ -16,7 +16,7 @@ $red-shades: (
   shade-7: lighten($red, 70%),
   shade-8: lighten($red, 80%),
   shade-9: lighten($red, 90%),
-  shade-10: lighten($red, 100%)
+  shade-10: lighten($red, 100%),
 );
 
 $green-shades: (
@@ -29,7 +29,7 @@ $green-shades: (
   shade-7: lighten($green, 70%),
   shade-8: lighten($green, 80%),
   shade-9: lighten($green, 90%),
-  shade-10: lighten($green, 100%)
+  shade-10: lighten($green, 100%),
 );
 
 $blue-shades: (
@@ -42,11 +42,11 @@ $blue-shades: (
   shade-7: lighten($blue, 70%),
   shade-8: lighten($blue, 80%),
   shade-9: lighten($blue, 90%),
-  shade-10: lighten($blue, 100%)
+  shade-10: lighten($blue, 100%),
 );
 
 // $theme: #26797f;
-$theme: #e0b60b;
+$theme: $blue;
 $theme-shades: (
   shade-1: lighten($theme, 10%),
   shade-2: lighten($theme, 20%),
@@ -57,5 +57,5 @@ $theme-shades: (
   shade-7: lighten($theme, 70%),
   shade-8: lighten($theme, 80%),
   shade-9: lighten($theme, 90%),
-  shade-10: lighten($theme, 100%)
+  shade-10: lighten($theme, 100%),
 );

@@ -23,8 +23,8 @@ html, body {
 
 select {
   outline: none;
-  background-color: #fefaec;
-  border: 1px solid #e0b60b;
+  background-color: #fff;
+  border: 1px solid #4476e4;
   border-radius: 10px !important; }
 
 ::-webkit-scrollbar {
@@ -96,7 +96,7 @@ input:checked + .slider:before {
 input {
   outline: none;
   border: none;
-  border-bottom: 1px solid #e0b60b; }
+  border-bottom: 1px solid #4476e4; }
 
 input[type="text"], input[type="password"], input[type="email"] {
   transition: all 0.5s; }
@@ -118,7 +118,7 @@ input[type="text"]::selection, input[type="password"]::selection, input[type="em
   color: red; }
 
 .context-menu-item.context-menu-hover {
-  background-color: #f5cc29; }
+  background-color: #7197ea; }
 /*====================CONTEXT MENU====================*/
 .tooltip-inner {
   width: max-content;

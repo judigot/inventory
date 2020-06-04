@@ -10,7 +10,7 @@
   cursor: pointer;
   padding: 5px;
   font-weight: bold;
-  background-color: #f5cc29;
+  background-color: #7197ea;
   transition: 0.2s;
   font-size: 20px;
   border-radius: 10px 10px 0px 0px;
@@ -18,7 +18,7 @@
 
 .tab button.activeTab {
   color: white;
-  background-color: #e0b60b; }
+  background-color: #4476e4; }
 
 #secondTabContent {
   display: none; }
