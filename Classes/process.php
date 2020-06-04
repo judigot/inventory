@@ -170,7 +170,7 @@ if ($_POST || $_FILES) {
                     Database::execute($connection, $sql);
                 }
 
-                if ($editedItems !== "false") {
+                if ($deletedItems !== "false") {
                     Database::delete($connection, $app_order_product, "id", $deletedItems);
                 }
 

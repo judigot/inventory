@@ -44,6 +44,8 @@ if ($_POST || $_FILES) {
                 $products = [];
                 $column = array("order_id", "product_id", "quantity", "product_cost", "product_price", "discount");
                 $sql;
+
+                // Update stock
                 for ($i = 0; $i < count($order); $i++) {
                     $price = $appSettings["customPrice"] ? $customerPrices[$order[$i]["size"] . "_price"] : $order[$i]["price"];
                     $discount = $order[$i]["discount"] ? $order[$i]["discount"] : "0";
@@ -87,7 +89,8 @@ if ($_POST || $_FILES) {
 
             if ($_POST['read'] == "getOrderdItems") {
                 $orderId = $_POST["data"]["orderId"];
-                $products = Database::read($connection, "SELECT `$app_order_product`.`id`, `$app_order_product`.`quantity` AS `QUANTITY`, `$app_product`.`product_name` AS `PRODUCT` FROM `$app_order_product` INNER JOIN `$app_product` ON `$app_order_product`.`product_id`=`$app_product`.`product_id` WHERE `order_id` = '$orderId'");
+                $sql = "SELECT `$app_order_product`.`id`, `$app_product`.`product_name` AS `PRODUCT`, `$app_product`.`product_stock` AS `REMAINING STOCKS`, `$app_order_product`.`quantity` AS `QUANTITY` FROM `$app_order_product` INNER JOIN `$app_product` ON `$app_order_product`.`product_id`=`$app_product`.`product_id` WHERE `order_id` = '$orderId'";
+                $products = Database::read($connection, $sql);
                 echo json_encode($products);
             }
 
@@ -131,6 +134,49 @@ if ($_POST || $_FILES) {
         }
 
         if (isset($_POST['update'])) {
+
+            if ($_POST['update'] === "updateOrderItems") {
+                $editedItems = $_POST["data"]["editedItems"];
+                $deletedItems = $_POST["data"]["deletedItems"];
+
+                $itemIDs = [];
+                $referenceValues = [];
+
+                if ($editedItems !== "false") {
+                    // Extract item IDs
+                    foreach ($editedItems as $value) {
+                        array_push($itemIDs, $value["id"]);
+                    }
+                    // Extract reference values
+                    $referenceValues = array_map(function ($size) {
+                        unset($size["oldQuantity"]);
+                        return $size;
+                    }, $editedItems);
+
+                    Database::update($connection, $app_order_product, "quantity", null, "id", $referenceValues);
+
+                    // Update stock
+                    $sql = "";
+                    $updatedStocks = [];
+
+                    for ($i = 0; $i < count($editedItems); $i++) {
+                        $itemID = $editedItems[$i]["id"];
+                        $changeInQuantity = abs($editedItems[$i]["newQuantity"] - $editedItems[$i]["oldQuantity"]);
+                        $operation = $editedItems[$i]["oldQuantity"] > $editedItems[$i]["newQuantity"] ? "+" : "-";
+                        $statement = "UPDATE `$app_product` JOIN `$app_order_product` ON (`$app_product`.`product_id`= `$app_order_product`.`product_id`) SET `product_stock` = (`product_stock` $operation $changeInQuantity) WHERE `$app_order_product`.`id` = '$itemID';";
+                        array_push($updatedStocks, $statement);
+                    }
+                    $sql = implode(" ", $updatedStocks);
+                    Database::execute($connection, $sql);
+                }
+
+                if ($deletedItems !== "false") {
+                    Database::delete($connection, $app_order_product, "id", $deletedItems);
+                }
+
+                echo json_encode(true);
+            }
+
             if ($_POST['update'] === "updateTable") {
 
                 $targetTable = $_POST["tableType"] === "product" ? $app_product : $app_customer;
@@ -158,10 +204,6 @@ if ($_POST || $_FILES) {
         }
 
         if (isset($_POST['delete'])) {
-            if ($_POST['delete'] === "updateOrderItems") {
-                Database::delete($connection, $app_order_product, "id", $_POST["data"]);
-                echo json_encode(true);
-            }
             if ($_POST['delete'] === "toggleRowStatus") {
                 $targetKey = $_POST["tableType"] . "_id";
                 $targetTable = $_POST["tableType"] === "product" ? $app_product : $app_customer;
