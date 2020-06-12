@@ -14,7 +14,7 @@
         "app_product_category"
     ],
     "appSettings": {
-        "customPrice": true
+        "customPrice": false
     },
     "appName": "Inventory",
     "appName2": "JV\u2019s School & Office Supply"
