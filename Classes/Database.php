@@ -36,14 +36,14 @@ class Database
         }
         if (!is_array($data[0])) {
             $data = array_map(function ($value) use ($connection) {
-                return $value != null ? $connection->quote(utf8_encode($value)) : "NULL";
+                return $value != null ? $connection->quote($value) : "NULL";
             }, $data);
             $values = "(" . implode(", ", $data) . ")";
         } else {
             $arrayIndex = array();
             for ($i = 0; $i < count($data); $i++) {
                 $data[$i] = array_map(function ($value) use ($connection) {
-                    return $value != null ? $connection->quote(utf8_encode($value)) : "NULL";
+                    return $value != null ? $connection->quote($value) : "NULL";
                 }, $data[$i]);
                 array_push($arrayIndex, implode(", ", $data[$i]));
             }
