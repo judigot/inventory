@@ -39,12 +39,12 @@ class Tools
     {
         $jsonPath = (file_exists($filePath)) ? $filePath : $filePath;
         $json = json_decode(file_get_contents($jsonPath), true);
-        $appId = self::getMACAddress();
+        $licenseKey = self::getMACAddress();
         $isVerified = null;
-        if (array_key_exists("appId", $json)) {
-            if (is_array($json["appId"])) {
-                for ($i = 0; $i < count($json["appId"]); $i++) {
-                    if (self::verifyPassword($appId, $json["appId"][$i])) {
+        if (array_key_exists("licenseKey", $json)) {
+            if (is_array($json["licenseKey"])) {
+                for ($i = 0; $i < count($json["licenseKey"]); $i++) {
+                    if (self::verifyPassword($licenseKey, $json["licenseKey"][$i])) {
                         $isVerified = true;
                         break;
                     } else {
@@ -52,10 +52,10 @@ class Tools
                     }
                 }
             } else {
-                $isVerified = self::verifyPassword($appId, $json["appId"]);
+                $isVerified = self::verifyPassword($licenseKey, $json["licenseKey"]);
             }
         } else {
-            $json["appId"] = self::hashPassword($appId);
+            $json["licenseKey"] = self::hashPassword($licenseKey);
             $fp = fopen($filePath, "wb");
             fwrite($fp, json_encode($json));
             $isVerified = true;
