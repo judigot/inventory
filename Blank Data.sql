@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 01, 2020 at 03:15 PM
+-- Generation Time: Nov 17, 2020 at 08:49 AM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.6
 
@@ -89,7 +89,7 @@ CREATE TABLE `app_custom_price` (
 CREATE TABLE `app_order` (
   `order_id` int(11) NOT NULL,
   `customer_id` int(11) NOT NULL,
-  `order_date` datetime NOT NULL
+  `order_date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
