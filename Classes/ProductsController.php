@@ -41,8 +41,8 @@ if ($_POST || $_FILES) {
             if ($_POST['read'] == "checkStocks") {
 
                 $quantityThreshold = 10;
-                $lowStocks = Database::read($connection, "SELECT `product_name` FROM `$app_product` WHERE `product_stock` BETWEEN 1 AND $quantityThreshold ORDER BY `$app_product`.`product_name` ASC;");
-                $noStocks = Database::read($connection, "SELECT `product_name` FROM `$app_product` WHERE `product_stock` <= 0 ORDER BY `$app_product`.`product_name` ASC;");
+                $lowStocks = Database::read($connection, "SELECT `product_name` FROM `$app_product` WHERE `product_stock` BETWEEN 1 AND $quantityThreshold AND `$app_product`.`status`='active' ORDER BY `$app_product`.`product_name` ASC;");
+                $noStocks = Database::read($connection, "SELECT `product_name` FROM `$app_product` WHERE `product_stock` <= 0 AND `$app_product`.`status` = 'active' ORDER BY `$app_product`.`product_name` ASC;");
 
                 $lowHash = md5(serialize($lowStocks));
                 $noHash = md5(serialize($noStocks));

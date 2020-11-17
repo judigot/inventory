@@ -32,8 +32,8 @@ if ($_POST || $_FILES) {
                 // Insert to main orders table
                 $customerId = $_POST["data"]["customer"];
                 $totalOrderCost = 0;
-                $column = array("customer_id", "order_date");
-                $Data = array($customerId, date("Y-m-d", time()));
+                $column = array("customer_id");
+                $Data = array($customerId);
                 Database::create($connection, $app_order, $column, $Data);
 
                 // Insert to junction table

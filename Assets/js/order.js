@@ -51,7 +51,23 @@ $(function () {
     });
 
     $(document).on("click", ".click-search", function (e) {
-        var searchInput = $(this).attr("data-row-id") ? `orderid='${$(this).html()}'` : $(this).html();
+        var clickType = $(this).attr("data-click-type");
+        var searchInput;
+
+        switch (clickType) {
+            case "id":
+                searchInput = `orderID='${$(this).attr("data-row-id")}'`;
+                break;
+            case "customer":
+                searchInput = `customer='${$(this).html()}'`;
+                break;
+            case "date":
+                searchInput = `orderDate='${$(this).attr("data-click-search")}'`;
+                break;
+            default:
+                break;
+        }
+
         order_ordersTable.search(searchInput).draw();
         $("#ordersTable_filter input").select();
     });
@@ -446,6 +462,12 @@ function order_loadOrders() {
                 },
                 {
                     "searchable": true
+                },
+                {
+                    "visible": false
+                },
+                {
+                    "visible": false
                 },
                 {
                     "visible": false

@@ -55,14 +55,14 @@ $columns = array(
     array(
         'db' => 'order_id', 'dt' => 0,
         'formatter' => function ($d, $row) {
-            return "<div data-table-type='product' class='click-search' data-row-id='$d'>$d</div>";
+            return "<div data-table-type='product' class='click-search' data-click-type='id' data-row-id='$d'>$d</div>";
         }
     ),
     array(
         'db' => 'customer_id', 'dt' => 1,
         'formatter' => function ($d, $row) use ($Connection, $app_customer) {
             $Result = read($Connection, "SELECT CONCAT(`$app_customer`.`first_name`, ' ', `$app_customer`.`last_name`) AS customer_name FROM `$app_customer` WHERE `customer_id` = '$d';");
-            $customer = "<div class='click-search'>{$Result[0]["customer_name"]}</div>";
+            $customer = "<div class='click-search' data-click-type='customer'>{$Result[0]["customer_name"]}</div>";
             disconnect($Connection);
             return $customer;
         }
@@ -167,8 +167,9 @@ $columns = array(
         'formatter' => function ($d, $row) {
             $orderDate = date('F j, Y', strtotime($d));
             $currentDate = date('F j, Y', strtotime(date("Y-m-d")));
-            $displayDate = $orderDate === $currentDate ? "Today" : date('F j, Y', strtotime($d));
-            return "<div class='click-search'>$displayDate</div>";
+            $displayDate = $orderDate === $currentDate ? "Today at " . date('g:i:s A', strtotime($d)) : date('F j, Y \a\t g:i:s A', strtotime($d));
+            $clickSearch = $orderDate === $currentDate ? "Today" : date('F j, Y', strtotime($d));
+            return "<div class='click-search' data-click-type='date' data-click-search='$clickSearch'>$displayDate</div>";
         },
     ),
     array(
@@ -216,8 +217,26 @@ $columns = array(
     array(
         'db' => 'order_date', 'dt' => 10,
         'formatter' => function ($d, $row) use ($currentWeek) {
-            return "orderid='{$row["order_id"]}'";
+            return "orderID='{$row["order_id"]}'";
         }
+    ),
+    array(
+        'db' => 'customer_id', 'dt' => 11,
+        'formatter' => function ($d, $row) use ($Connection, $app_customer) {
+            $Result = read($Connection, "SELECT CONCAT(`$app_customer`.`first_name`, ' ', `$app_customer`.`last_name`) AS customer_name FROM `$app_customer` WHERE `customer_id` = '$d';");
+            $customer = "<div class='click-search' data-click-type='customer'>{$Result[0]["customer_name"]}</div>";
+            disconnect($Connection);
+            return "customer='$customer'";
+        }
+    ),
+    array(
+        'db' => 'order_date', 'dt' => 12,
+        'formatter' => function ($d, $row) {
+            $orderDate = date('F j, Y', strtotime($d));
+            $currentDate = date('F j, Y', strtotime(date("Y-m-d")));
+            $clickSearch = $orderDate === $currentDate ? "Today" : date('F j, Y', strtotime($d));
+            return "orderDate='$clickSearch'";
+        },
     ),
 );
 
