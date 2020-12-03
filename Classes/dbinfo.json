@@ -3,7 +3,7 @@
     "password": "",
     "host": "localhost",
     "database": [
-        "appjudigot_inventory"
+        "inventory"
     ],
     "table": [
         "app_user",
