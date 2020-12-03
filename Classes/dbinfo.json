@@ -3,7 +3,7 @@
     "password": "",
     "host": "localhost",
     "database": [
-        "inventory"
+        "appjudigot_inventory"
     ],
     "table": [
         "app_user",
@@ -18,5 +18,6 @@
     },
     "appName": "Inventory",
     "appName2": "JV\u2019s School & Office Supply",
-    "appId": "inventory"
+    "appId": "inventory",
+    "licenseKey": "$2y$10$l9N\/6QBGSnLnZewOkXMXAOo5FUh1Eh8AmWuSHqXqPvyHVSUhtjRFm"
 }

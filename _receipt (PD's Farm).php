@@ -1,5 +1,5 @@
 <?php
-$static = false;
+$static = true;
 if (isset($_POST['print']) || $static) {
 
     require_once 'Imports/preload.php';
@@ -59,9 +59,9 @@ if (isset($_POST['print']) || $static) {
             .grid-container {
                 /* padding: 0px 10px 0px 10px; */
                 padding: 2%;
-                /* display: grid;
-                grid-gap: 10px; */
-                /* grid-template-columns: repeat(2, 1fr); */
+                display: grid;
+                grid-gap: 10px;
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .lefty {
@@ -102,17 +102,17 @@ if (isset($_POST['print']) || $static) {
         <div class="grid-container">
 
             <?php
-            for ($i = 0; $i < 1; $i++) {
+            for ($i = 0; $i < 2; $i++) {
             ?>
                 <div class="grid-column">
                     <div class="header">
                         <div>
-                            <span>INVENTORY</span>
+                            <span>PD FARM</span>
                             <br>
-                            <span>OFFICIAL RECEIPT</span>
+                            <span>ORDER SLIP</span>
                         </div>
                         <br>
-                        <!-- <div class="lefty"><?php echo $i === 0 ? "Original" : "Duplicate" ?></div> -->
+                        <div class="lefty"><?php echo $i === 0 ? "Original" : "Duplicate" ?></div>
                         <br>
                         <br>
                         <div>
