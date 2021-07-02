@@ -73,8 +73,8 @@ CREATE TABLE `app_customer` (
 
 INSERT INTO `app_customer` (`customer_id`, `first_name`, `last_name`, `client_address`, `date_added`, `status`, `jumbo_price`, `jumbo_c_price`, `xl_price`, `xl_c_price`, `l_price`, `l_c_price`, `m_price`, `m_c_price`, `s_price`, `s_c_price`, `p_price`, `p_c_price`, `pwe_price`, `pwe_c_price`, `d2_price`, `d2_c_price`, `marble_price`, `marble_c_price`, `d1b_price`, `d1b_c_price`, `d1s_price`, `d1s_c_price`, `b1_price`, `b1_c_price`, `b2_price`, `b2_c_price`, `b3_price`, `b3_c_price`, `es_price`) VALUES
 (1, 'Jude Francis', 'Igot', 'Lapu-Lapu City', '2019-05-14', 'active', 500, 600, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-(2, 'Sean Jurie', 'EdaÃ±o', 'Cebu City', '2019-05-20', 'active', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60),
-(3, 'Jefferson', 'Dela PeÃ±a', 'Cebu City', '2019-06-07', 'active', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+(2, 'Sean Jurie', 'Edaño', 'Cebu City', '2019-05-20', 'active', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 60),
+(3, 'Jefferson', 'Dela Peña', 'Cebu City', '2019-06-07', 'active', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (4, 'John', 'Doe', 'Doeland', '2019-06-07', 'active', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
 (5, 'Jane', 'Doe', 'Doeland', '2019-06-07', 'active', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
@@ -991,8 +991,8 @@ CREATE TABLE `app_user` (
 --
 
 INSERT INTO `app_user` (`user_id`, `username`, `password`, `user_type`) VALUES
-(1, 'admin', '$2y$10$ejAMelr40nk12xTThVxJvuntJr39ABMeBBnJkatuQqCypgbjHw8lm', 'administrator'),
-(2, 'secretary', '$2y$10$I2Ws7mxleh76eez7nXygbuYvkjZ.QYgYww2ImZI8aPef.hWdR8i/e', 'secretary');
+(1, 'admin', 'y$ejAMelr40nk12xTThVxJvuntJr39ABMeBBnJkatuQqCypgbjHw8lm', 'administrator'),
+(2, 'secretary', 'y$I2Ws7mxleh76eez7nXygbuYvkjZ.QYgYww2ImZI8aPef.hWdR8i/e', 'secretary');
 
 --
 -- Indexes for dumped tables
