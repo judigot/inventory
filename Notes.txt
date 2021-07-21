@@ -1,3 +1,4 @@
+Fix quicktable view on mobile (table must be scrollable horizontally)
 Show custom price on order preview when ordering (must override default price)
 When custom date is set and customer searches again, the result is not following the custom date
 Excape html input (Prevent cross-site scripting)
