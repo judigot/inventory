@@ -991,8 +991,8 @@ CREATE TABLE `app_user` (
 --
 
 INSERT INTO `app_user` (`user_id`, `username`, `password`, `user_type`) VALUES
-(1, 'admin', 'y$ejAMelr40nk12xTThVxJvuntJr39ABMeBBnJkatuQqCypgbjHw8lm', 'administrator'),
-(2, 'secretary', 'y$I2Ws7mxleh76eez7nXygbuYvkjZ.QYgYww2ImZI8aPef.hWdR8i/e', 'secretary');
+(1, 'admin', '$2y$10$i9zJBTxI0KADKxwZMLu8l./k/mthk5t7iRMdLG.MtFZwjxhZc2WO6', 'administrator'),
+(2, 'secretary', '$2y$10$i9zJBTxI0KADKxwZMLu8l./k/mthk5t7iRMdLG.MtFZwjxhZc2WO6', 'secretary');
 
 --
 -- Indexes for dumped tables
