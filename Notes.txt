@@ -6,6 +6,11 @@ Deleted products with no stock or low in stock still shows in product notificati
 Edited/deleted categories still show up in context menu 
 Inaccurate report on items with discount in production version
 Escape product names with single/double quotes
+
+See:
+Shopify
+SKU (stock-keeping unit)
+
 ---------------
 Row for annual total on reports
 Custom price table
