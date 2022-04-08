@@ -230,7 +230,7 @@ if ($_POST || $_FILES) {
                 $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
                 //==============MONTHLY=GROSS=SALES==============//
-                $grossSalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '%s' AND '%s'";
+                $grossSalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` >= '%s' AND `order_date` < (DATE('%s') + INTERVAL 1 DAY)";
                 $monthlySales = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE month(`order_date`) = '%s' AND year(`order_date`) = '%s'";
                 $tableDetails = [
                     "Month" => $months,
@@ -251,7 +251,7 @@ if ($_POST || $_FILES) {
                 //==============MONTHLY=GROSS=SALES==============//
 
                 //==============MONTHLY=GROSS=PROFIT==============//
-                $grossProfitSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '%s' AND '%s'";
+                $grossProfitSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` >= '%s' AND `order_date` < (DATE('%s') + INTERVAL 1 DAY)";
                 $monthlyProfit = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE month(`order_date`) = '%s' AND year(`order_date`) = '%s'";
                 $tableDetails = [
                     "Month" => $months,
@@ -337,12 +337,20 @@ function monthlyReportsBuilder($months, $tableDetails, $weekRange, $year)
 
         for ($weekIndex = 0; $weekIndex < count($tableDetails); $weekIndex++) {
             // Skip the "Month" column
-            $isColumnName = $weekIndex == 0;
+
             if ($weekIndex >= 1) {
                 $columnName = $columnNames[$weekIndex];
                 $query = $tableDetails[$columnName];
                 $startOfWeek = $weekRange[$weekIndex - 1][0];
                 $endOfWeek = $weekRange[$weekIndex - 1][1];
+                $isMonth = $weekIndex == 0;
+
+                if ($isMonth) {
+                    $sql .= "(" . sprintf(
+                        $query,
+                        $columnName
+                    ) . ") AS `{$columnName}`, ";
+                }
 
                 if ($weekIndex <= count($weekRange)) {
 
@@ -427,12 +435,6 @@ function monthlyReportsBuilder($months, $tableDetails, $weekRange, $year)
                             $year,
                         ) . ") AS `{$columnName}`, ";
                     }
-                }
-                if ($isColumnName) {
-                    $sql .= "(" . sprintf(
-                        $query,
-                        $columnName
-                    ) . ") AS `{$columnName}`, ";
                 }
             }
         }
