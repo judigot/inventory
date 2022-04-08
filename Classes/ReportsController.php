@@ -231,13 +231,14 @@ if ($_POST || $_FILES) {
 
                 //==============MONTHLY=GROSS=SALES==============//
                 $grossSalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '%s' AND '%s'";
+                $monthlySales = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE month(`order_date`) = '%s' AND year(`order_date`) = '%s'";
                 $tableDetails = [
                     "Month" => $months,
                     "Week 1 (1 - 7)" => $grossSalesSql,
                     "Week 2 (8 - 14)" => $grossSalesSql,
                     "Week 3 (15 - 21)" => $grossSalesSql,
                     "Week 4 (22 - 31)" => $grossSalesSql,
-                    "Gross Sales" => $grossSalesSql,
+                    "Gross Sales" => $monthlySales,
                 ];
                 $weekRange = [
                     ["%u-%s-01", "%u-%s-07"],
@@ -251,13 +252,14 @@ if ($_POST || $_FILES) {
 
                 //==============MONTHLY=GROSS=PROFIT==============//
                 $grossProfitSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '%s' AND '%s'";
+                $monthlyProfit = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE month(`order_date`) = '%s' AND year(`order_date`) = '%s'";
                 $tableDetails = [
                     "Month" => $months,
                     "Week 1 (1 - 7)" => $grossProfitSql,
                     "Week 2 (8 - 14)" => $grossProfitSql,
                     "Week 3 (15 - 21)" => $grossProfitSql,
                     "Week 4 (22 - 31)" => $grossProfitSql,
-                    "Gross Profit" => $grossProfitSql,
+                    "Gross Profit" => $monthlyProfit,
                 ];
                 $weekRange = [
                     ["%u-%s-01", "%u-%s-07"],
@@ -335,18 +337,102 @@ function monthlyReportsBuilder($months, $tableDetails, $weekRange, $year)
 
         for ($weekIndex = 0; $weekIndex < count($tableDetails); $weekIndex++) {
             // Skip the "Month" column
+            $isColumnName = $weekIndex == 0;
             if ($weekIndex >= 1) {
+                $columnName = $columnNames[$weekIndex];
+                $query = $tableDetails[$columnName];
+                $startOfWeek = $weekRange[$weekIndex - 1][0];
+                $endOfWeek = $weekRange[$weekIndex - 1][1];
+
                 if ($weekIndex <= count($weekRange)) {
+
                     // Handle changing days in a month (Week 4 and gross amount)
-                    $is4thWeekAndGross = in_array($weekIndex, [4, 5]);
-                    if ($is4thWeekAndGross) {
-                        $maxDaysInAMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
-                        $sql .= "(" . sprintf($tableDetails[$columnNames[$weekIndex]], $columnNames[$weekIndex], sprintf($weekRange[$weekIndex - 1][0], $year, $month), sprintf($weekRange[$weekIndex - 1][1], $year, $month, $maxDaysInAMonth)) . ") AS `{$columnNames[$weekIndex]}`, ";
-                    } else {
-                        $sql .= "(" . sprintf($tableDetails[$columnNames[$weekIndex]], $columnNames[$weekIndex], sprintf($weekRange[$weekIndex - 1][0], $year, $month), sprintf($weekRange[$weekIndex - 1][1], $year, $month)) . ") AS `{$columnNames[$weekIndex]}`, ";
+                    $is4thWeek = in_array($weekIndex, [4]);
+
+                    $isGross = in_array($weekIndex, [5]);
+
+                    // Weeks 1 to 3
+                    if (!$is4thWeek && !$isGross) {
+                        $sql .= "(" . sprintf(
+                            $query,
+                            $columnName,
+                            sprintf(
+                                $startOfWeek,
+                                $year,
+                                $month
+                            ),
+                            sprintf(
+                                $endOfWeek,
+                                $year,
+                                $month
+                            )
+                        ) . ") AS `{$columnName}`, ";
                     }
-                } else {
-                    $sql .= "(" . sprintf($tableDetails[$columnNames[$weekIndex]], $columnNames[$weekIndex]) . ") AS `{$columnNames[$weekIndex]}`, ";
+
+                    // Week 4 and gross
+                    if ($is4thWeek) {
+                        $maxDaysInAMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+
+                        $sql .= "(" . sprintf(
+                            // SELECT...AS `%s`...BETWEEN '%s' AND '%s'
+                            // ___________1st^___________2nd^_____3rd^__
+                            $query,
+
+                            // 1st %s replacement
+                            $columnName,
+
+                            // 2nd %s replacement
+                            // Start of the week replacement
+                            sprintf(
+
+                                // "%u-%s-01"
+                                $startOfWeek,
+
+                                // $year will replace %u
+                                $year,
+
+                                // $month will replace %s
+                                $month
+                            ),
+
+                            // 3rd %s replacement
+                            // End of the week replacement
+                            sprintf(
+                                // "%u-%s-%u"
+                                $endOfWeek,
+
+                                $year,
+                                $month,
+                                $maxDaysInAMonth
+                            )
+                        ) . ") AS `{$columnName}`, ";
+                    }
+
+                    // Gross
+                    if ($isGross) {
+                        $maxDaysInAMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+
+                        $sql .= "(" . sprintf(
+                            // SELECT...AS `%s`...WHERE month(`order_date`) = '%s' AND year(`order_date`) = '%s'
+                            // ___________1st^_______________________________2nd^__________________________3rd^__
+                            $query,
+
+                            // 1st %s replacement
+                            $columnName,
+
+                            // 2nd %s replacement
+                            $month,
+
+                            // 3rd %s replacement
+                            $year,
+                        ) . ") AS `{$columnName}`, ";
+                    }
+                }
+                if ($isColumnName) {
+                    $sql .= "(" . sprintf(
+                        $query,
+                        $columnName
+                    ) . ") AS `{$columnName}`, ";
                 }
             }
         }
