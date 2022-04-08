@@ -249,6 +249,7 @@ if ($_POST || $_FILES) {
                 ];
                 $monthlyGrossSales = Database::read($connection, monthlyReportsBuilder($months, $tableDetails, $weekRange, $year));
                 $data[] = $monthlyGrossSales;
+                // 
                 //==============MONTHLY=GROSS=SALES==============//
 
                 //==============MONTHLY=GROSS=PROFIT==============//
