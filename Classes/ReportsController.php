@@ -231,7 +231,7 @@ if ($_POST || $_FILES) {
                 $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
                 //==============MONTHLY=GROSS=SALES==============//
-                $grossSalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - `$app_order_product`.`discount`, 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '%s' AND '%s'";
+                $grossSalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - `$app_order_product`.`discount`, 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '%s' AND '%s' GROUP BY `app_order_product`.`discount`";
                 $tableDetails = [
                     "Month" => $months,
                     "Week 1 (1 - 7)" => $grossSalesSql,
@@ -244,15 +244,16 @@ if ($_POST || $_FILES) {
                     ["%u-%s-01", "%u-%s-07"],
                     ["%u-%s-08", "%u-%s-14"],
                     ["%u-%s-15", "%u-%s-21"],
-                    ["%u-%s-22", "%u-%s-31"],
-                    ["%u-%s-01", "%u-%s-31"],
+                    ["%u-%s-22", "%u-%s-%u"],
+                    ["%u-%s-01", "%u-%s-%u"],
                 ];
                 $monthlyGrossSales = Database::read($connection, monthlyReportsBuilder($months, $tableDetails, $weekRange, $year));
                 $data[] = $monthlyGrossSales;
+                
                 //==============MONTHLY=GROSS=SALES==============//
 
                 //==============MONTHLY=GROSS=PROFIT==============//
-                $grossProfitSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - `$app_order_product`.`discount`, 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '%s' AND '%s'";
+                $grossProfitSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - `$app_order_product`.`discount`, 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '%s' AND '%s' GROUP BY `app_order_product`.`discount`";
                 $tableDetails = [
                     "Month" => $months,
                     "Week 1 (1 - 7)" => $grossProfitSql,
@@ -265,11 +266,12 @@ if ($_POST || $_FILES) {
                     ["%u-%s-01", "%u-%s-07"],
                     ["%u-%s-08", "%u-%s-14"],
                     ["%u-%s-15", "%u-%s-21"],
-                    ["%u-%s-22", "%u-%s-31"],
-                    ["%u-%s-01", "%u-%s-31"],
+                    ["%u-%s-22", "%u-%s-%u"],
+                    ["%u-%s-01", "%u-%s-%u"],
                 ];
                 $monthlyGrossProfit = Database::read($connection, monthlyReportsBuilder($months, $tableDetails, $weekRange, $year));
                 $data[] = $monthlyGrossProfit;
+                die(json_encode($data));
                 //==============MONTHLY=GROSS=PROFIT==============//
 
                 //==============WEEKLY=GROSS=SALES==============//
@@ -328,15 +330,25 @@ function monthlyReportsBuilder($months, $tableDetails, $weekRange, $year)
     for ($i = 0; $i < count($months); $i++) {
         $month = ($i + 1) < 10 ? "0" . ($i + 1) : ($i + 1);
         $sql = "SELECT '$months[$i]' AS `" . implode("`, `", $columnNames) . "` FROM ";
-        for ($j = 0; $j < count($tableDetails); $j++) {
-            if ($j !== 0) {
-                if ($j <= count($weekRange)) {
-                    $sql .= "(" . sprintf($tableDetails[$columnNames[$j]], $columnNames[$j], sprintf($weekRange[$j - 1][0], $year, $month), sprintf($weekRange[$j - 1][1], $year, $month)) . ") AS `{$columnNames[$j]}`, ";
+
+        for ($weekIndex = 0; $weekIndex < count($tableDetails); $weekIndex++) {
+            // Skip the "Month" column
+            if ($weekIndex >= 1) {
+                if ($weekIndex <= count($weekRange)) {
+                    // Handle changing days in a month (Week 4 and gross amount)
+                    $is4thWeekAndGross = in_array($weekIndex, [4, 5]);
+                    if ($is4thWeekAndGross) {
+                        $maxDaysInAMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+                        $sql .= "(" . sprintf($tableDetails[$columnNames[$weekIndex]], $columnNames[$weekIndex], sprintf($weekRange[$weekIndex - 1][0], $year, $month), sprintf($weekRange[$weekIndex - 1][1], $year, $month, $maxDaysInAMonth)) . ") AS `{$columnNames[$weekIndex]}`, ";
+                    } else {
+                        $sql .= "(" . sprintf($tableDetails[$columnNames[$weekIndex]], $columnNames[$weekIndex], sprintf($weekRange[$weekIndex - 1][0], $year, $month), sprintf($weekRange[$weekIndex - 1][1], $year, $month)) . ") AS `{$columnNames[$weekIndex]}`, ";
+                    }
                 } else {
-                    $sql .= "(" . sprintf($tableDetails[$columnNames[$j]], $columnNames[$j]) . ") AS `{$columnNames[$j]}`, ";
+                    $sql .= "(" . sprintf($tableDetails[$columnNames[$weekIndex]], $columnNames[$weekIndex]) . ") AS `{$columnNames[$weekIndex]}`, ";
                 }
             }
         }
+
         $monthsData[] = substr($sql, 0, -2);
     }
     return implode(" UNION ", $monthsData) . ";";
