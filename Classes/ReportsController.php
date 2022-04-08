@@ -224,14 +224,13 @@ if ($_POST || $_FILES) {
             }
 
             if ($_POST['read'] == "getFinancialReports") {
-                $data = [];
                 $year = $_POST["data"]["selectedYear"];
                 $selectedWeek = isset($_POST["data"]["selectedWeek"]) ? $_POST["data"]["selectedWeek"] : Tools::getCurrentWeekNumber();
                 $weekDates = Tools::getWeekDates($year, $selectedWeek);
                 $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
                 //==============MONTHLY=GROSS=SALES==============//
-                $grossSalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - `$app_order_product`.`discount`, 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '%s' AND '%s' GROUP BY `app_order_product`.`discount`";
+                $grossSalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '%s' AND '%s'";
                 $tableDetails = [
                     "Month" => $months,
                     "Week 1 (1 - 7)" => $grossSalesSql,
@@ -248,12 +247,10 @@ if ($_POST || $_FILES) {
                     ["%u-%s-01", "%u-%s-%u"],
                 ];
                 $monthlyGrossSales = Database::read($connection, monthlyReportsBuilder($months, $tableDetails, $weekRange, $year));
-                $data[] = $monthlyGrossSales;
-                
                 //==============MONTHLY=GROSS=SALES==============//
 
                 //==============MONTHLY=GROSS=PROFIT==============//
-                $grossProfitSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - `$app_order_product`.`discount`, 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '%s' AND '%s' GROUP BY `app_order_product`.`discount`";
+                $grossProfitSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '%s' AND '%s'";
                 $tableDetails = [
                     "Month" => $months,
                     "Week 1 (1 - 7)" => $grossProfitSql,
@@ -270,12 +267,10 @@ if ($_POST || $_FILES) {
                     ["%u-%s-01", "%u-%s-%u"],
                 ];
                 $monthlyGrossProfit = Database::read($connection, monthlyReportsBuilder($months, $tableDetails, $weekRange, $year));
-                $data[] = $monthlyGrossProfit;
-                die(json_encode($data));
                 //==============MONTHLY=GROSS=PROFIT==============//
 
                 //==============WEEKLY=GROSS=SALES==============//
-                $daySalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - `$app_order_product`.`discount`, 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` = '%s'";
+                $daySalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` >= '%s' AND `order_date` < (DATE('%s') + 1)";
                 $weeklyGrossSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '{$weekDates[0]}' AND '{$weekDates[6]}'";
                 $tableDetails = [
                     date("l", strtotime($weekDates[0])) => $daySalesSql,
@@ -288,11 +283,10 @@ if ($_POST || $_FILES) {
                     "Gross Sales" => $weeklyGrossSql,
                 ];
                 $weeklyGrossSales = Database::Read($connection, weeklyReportsBuilder($weekDates, $tableDetails));
-                $data[] = $weeklyGrossSales;
                 //==============WEEKLY=GROSS=SALES==============//
 
                 //==============WEEKLY=GROSS=PROFIT==============//
-                $dayProfitSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - `$app_order_product`.`discount`, 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` = '%s'";
+                $dayProfitSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` >= '%s' AND `order_date` < (DATE('%s') + 1)";
                 $weeklyGrossSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '{$weekDates[0]}' AND '{$weekDates[6]}'";
                 $tableDetails = [
                     date("l", strtotime($weekDates[0])) => $dayProfitSql,
@@ -305,14 +299,22 @@ if ($_POST || $_FILES) {
                     "Gross Profit" => $weeklyGrossSql,
                 ];
                 $weeklyGrossProfit = Database::Read($connection, weeklyReportsBuilder($weekDates, $tableDetails));
-                $data[] = $weeklyGrossProfit;
                 //==============WEEKLY=GROSS=PROFIT==============//
 
                 // Get max week from selected year
                 $maxWeek = $year === date("Y") ? Tools::getCurrentWeekNumber() : date("W", strtotime("$year-12-31") - 1);
-                $data[] = [(int)$maxWeek, (int)Tools::getCurrentWeekNumber()];
 
-                echo json_encode($data);
+                $data = [
+                    "monthlyGrossSales" => $monthlyGrossSales,
+                    "monthlyGrossProfit" => $monthlyGrossProfit,
+                    "weeklyGrossSales" => $weeklyGrossSales,
+                    "weeklyGrossProfit" => $weeklyGrossProfit,
+                    "maxWeek" => (int)$maxWeek,
+                    "currentWeek" => (int)Tools::getCurrentWeekNumber(),
+                    "weekDates" => $weekDates
+                ];
+
+                die(json_encode($data));
             }
         }
         Database::disconnect($connection);
@@ -359,7 +361,7 @@ function weeklyReportsBuilder($weekDates, $tableDetails)
     $sql = "SELECT `" . implode("`, `", $columnNames) . "` FROM ";
     for ($i = 0; $i < count($columnNames); $i++) {
         if ($i < count($weekDates)) {
-            $sql .= "(" . sprintf($tableDetails[$columnNames[$i]], $columnNames[$i], $weekDates[$i]) . ") AS `{$columnNames[$i]}`, ";
+            $sql .= "(" . sprintf($tableDetails[$columnNames[$i]], $columnNames[$i], $weekDates[$i], $weekDates[$i]) . ") AS `{$columnNames[$i]}`, ";
         } else {
             $sql .= "(" . sprintf($tableDetails[$columnNames[$i]], $columnNames[$i]) . ") AS `{$columnNames[$i]}`, ";
         }

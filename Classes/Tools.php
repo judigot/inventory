@@ -22,10 +22,11 @@ class Tools
 
     public static function getWeekDates($year, $weekNumber)
     {
+        $isSundayStartOfTheWeek = true;
         $sanitized = self::addLeadingZero($weekNumber);
         $currentWeekDates = array();
         for ($i = 0; $i < 7; $i++) {
-            $currentWeekDates[] = date("Y-m-d", strtotime("$year-W$sanitized-0 + $i days"));
+            $currentWeekDates[] = date("Y-m-d", strtotime("$year-W$sanitized-0 + " . ($isSundayStartOfTheWeek ? $i : $i + 1) . " days"));
         }
         return $currentWeekDates;
     }
