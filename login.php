@@ -38,7 +38,7 @@
 
                         <div id="secretaryBox">
                             <i id="secretary" class="user-icon fas fa-user"></i>
-                            <h4>Secretary</h4>
+                            <h4>POS</h4>
                         </div>
 
                     </div>
