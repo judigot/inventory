@@ -38,6 +38,8 @@ $(function () {
   $(document).on("contextmenu", function (e) {
     return false;
   });
+
+  // Prevent empty input
   $(document).on("keyup", "input", function (e) {
     if (custom_isEmptyInput(this.value)) {
       this.value = "";
@@ -103,7 +105,7 @@ function custom_quickTable(tableIdentifier, data, tfoot) {
   for (var i = 0; i < data.length; i++) {
     tbodyHTML += `<tr class='${tableElements["tr"]}'>`;
     for (var j = 0; j < columnNames.length; j++) {
-      var rowData = data[i][columnNames[j]] ? data[i][columnNames[j]] : "-";
+      var rowData = data[i][columnNames[j]] || "-";
       tbodyHTML += `<td class='${tableElements["td"]}'>${rowData}</td>`;
     }
     tbodyHTML += "</tr>";
