@@ -1,0 +1,16 @@
+cd src
+
+npx sequelize-cli model:generate --name user --attributes firstName:string,lastName:string,email:string,password:string --force
+
+npx sequelize-cli model:generate --name post --attributes postName:string,postOwner:integer --force
+
+git status
+
+Generate migrations from existing tables
+//==========================//
+
+npx sequelize-auto -h localhost -d bigbang -u root -x 123 -p 3306  --dialect mysql -c ./src/sequelize/config/config.js -o ./src/sequelize/models -t Users Posts
+
+//==========================//
+
+npx sequelize-cli migration:create --config ./src/sequelize/config/config.js --migrations-path ./src/sequelize/migrations --seeders-path ./src/sequelize/seeders --name migrations-skeleton
