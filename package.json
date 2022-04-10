@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/judigot/inventory#readme",
   "dependencies": {
+    "dotenv": "^16.0.0",
+    "mysql2": "^2.3.3",
     "sequelize": "^6.18.0",
     "sequelize-auto": "^0.8.8"
   }

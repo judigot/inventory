@@ -9,7 +9,7 @@ git status
 Generate migrations from existing tables
 //==========================//
 
-npx sequelize-auto -h localhost -d bigbang -u root -x 123 -p 3306  --dialect mysql -c ./src/sequelize/config/config.js -o ./src/sequelize/models -t Users Posts
+npx sequelize-auto -h localhost -d appjudigot_inventory -u root -x 123 -p 3306  --dialect mysql -c ./src/sequelize/config/config.js -o ./src/sequelize/models -t Users Posts
 
 //==========================//
 
