@@ -40,7 +40,7 @@ $(function () {
   });
 
   // Prevent empty input
-  $(document).on("keyup", "input", function (e) {
+  $(document).on("keyup", "input:not(.order-range)", function (e) {
     if (custom_isEmptyInput(this.value)) {
       this.value = "";
     }
