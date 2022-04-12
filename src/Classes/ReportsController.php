@@ -13,6 +13,8 @@ if ($_POST || $_FILES) {
     if ($connection) {
         if (isset($_POST['read'])) {
 
+            $weeklyCondition = "`order_date` >= '%s' AND `order_date` < (DATE('%s') + INTERVAL 1 DAY)";
+
             if ($_POST['read'] == "getActiveYears") {
                 $data = array(
                     "currentYear" => date("Y"),
@@ -34,22 +36,24 @@ if ($_POST || $_FILES) {
                 if ($_POST["data"]["salesType"] === "product") {
                     //======================================PRODUCT======================================//
                     //==============MONTHLY=PRODUCT=QUANTITY==============//
-                    $productSalesSql = "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `product_id` = '{$_POST["data"]["rowId"]}' AND `order_date` BETWEEN '%s' AND '%s'";
+                    $productSalesSql = "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `product_id` = '{$_POST["data"]["rowId"]}' AND $weeklyCondition";
+                    $monthlyProductSalesSql = "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `product_id` = '{$_POST["data"]["rowId"]}' AND month(`order_date`) = '%s' AND year(`order_date`) = '%s'";
                     $tableDetails = [
                         "Month" => $months,
                         "Week 1 (1 - 7)" => $productSalesSql,
                         "Week 2 (8 - 14)" => $productSalesSql,
                         "Week 3 (15 - 21)" => $productSalesSql,
                         "Week 4 (22 - 31)" => $productSalesSql,
-                        "Total Quantity" => $productSalesSql,
+                        "Total Quantity" => $monthlyProductSalesSql,
                     ];
                     $weekRange = [
                         ["%u-%s-01", "%u-%s-07"],
                         ["%u-%s-08", "%u-%s-14"],
                         ["%u-%s-15", "%u-%s-21"],
-                        ["%u-%s-22", "%u-%s-31"],
+                        ["%u-%s-22", "%u-%s-%u"],
                         ["%u-%s-01", "%u-%s-31"],
                     ];
+                    // die(monthlyReportsBuilder($months, $tableDetails, $weekRange, $year));
                     $productSales = Database::read($connection, monthlyReportsBuilder($months, $tableDetails, $weekRange, $year));
                     $data[] = $productSales;
                     //==============MONTHLY=PRODUCT=QUANTITY==============//
@@ -69,39 +73,71 @@ if ($_POST || $_FILES) {
                     //======================================PRODUCT======================================//
                 } else {
                     //======================================CUSTOMER======================================//
-                    $sql = "";
-                    $weeks = ["Week 1 (1 - 7)", "Week 2 (8 - 14)", "Week 3 (15 - 21)", "Week 4 (22 - 31)", "Gross Sales", "Gross Profit"];
-                    $weekString = "`" . implode("`, `", $weeks) . "`";
-                    $year = $_POST["data"]["selectedYear"];
-                    $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                    for ($i = 0; $i < count($months); $i++) {
-                        $month = ($i + 1) < 10 ? "0" . ($i + 1) : ($i + 1);
-                        $sql .= "SELECT '{$months[$i]}, $year' AS `Month`, `Customer Name`, $weekString FROM";
-                        $sql .= "(SELECT CONCAT(`first_name`, ' ', `last_name`) AS `Customer Name` FROM `$app_customer` WHERE `$app_customer`.`customer_id` = '{$_POST["data"]["rowId"]}') AS `Customer Name`,";
-                        for ($j = 0; $j < count($weeks); $j++) {
-                            $x = $j === 0 ? $j + 1 : $j;
-                            $weekRange = [
-                                ["$year-$month-01", "$year-$month-07"],
-                                ["$year-$month-08", "$year-$month-14"],
-                                ["$year-$month-15", "$year-$month-21"],
-                                ["$year-$month-22", "$year-$month-31"],
-                                ["$year-$month-01", "$year-$month-31"],
-                                ["$year-$month-01", "$year-$month-31"],
-                            ];
-                            $week = [$weekRange[$j][0], $weekRange[$j][1]];
-                            $columnAlias = $weeks[$j];
-                            if ($j === count($weeks) - 1) {
-                                // Last column index
-                                $sql .= "(SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - `$app_order_product`.`discount`, 2)) AS `Gross Profit` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '{$weekRange[$j][0]}' AND '{$weekRange[$j][1]}' AND `$app_order`.`customer_id` = '{$_POST["data"]["rowId"]}') AS `$weeks[$j]`, ";
-                            } else {
-                                $sql .= "(SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - `$app_order_product`.`discount`, 2)) AS `$weeks[$j]` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '{$weekRange[$j][0]}' AND '{$weekRange[$j][1]}' AND `$app_order`.`customer_id` = '{$_POST["data"]["rowId"]}') AS `$weeks[$j]`, ";
+                    $condition = true;
+                    // $condition = false;
+                    if ($condition) {
+                        $sql = "";
+                        $weeks = ["Week 1 (1 - 7)", "Week 2 (8 - 14)", "Week 3 (15 - 21)", "Week 4 (22 - 31)", "Gross Sales", "Gross Profit"];
+                        $weekString = "`" . implode("`, `", $weeks) . "`";
+                        $year = $_POST["data"]["selectedYear"];
+                        $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                        for ($i = 0; $i < count($months); $i++) {
+                            $month = ($i + 1) < 10 ? "0" . ($i + 1) : ($i + 1);
+                            $maxDaysInAMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+                            $sql .= "SELECT '{$months[$i]}, $year' AS `Month`, `Customer Name`, $weekString FROM";
+                            $sql .= "(SELECT CONCAT(`first_name`, ' ', `last_name`) AS `Customer Name` FROM `$app_customer` WHERE `$app_customer`.`customer_id` = '{$_POST["data"]["rowId"]}') AS `Customer Name`,";
+                            for ($j = 0; $j < count($weeks); $j++) {
+                                $x = $j === 0 ? $j + 1 : $j;
+                                $weekRange = [
+                                    ["$year-$month-01", "$year-$month-07"],
+                                    ["$year-$month-08", "$year-$month-14"],
+                                    ["$year-$month-15", "$year-$month-21"],
+                                    ["$year-$month-22", "$year-$month-$maxDaysInAMonth"],
+                                    ["$year-$month-01", "$year-$month-$maxDaysInAMonth"],
+                                    ["$year-$month-01", "$year-$month-$maxDaysInAMonth"],
+                                ];
+                                $week = [$weekRange[$j][0], $weekRange[$j][1]];
+                                $columnAlias = $weeks[$j];
+                                if ($j === count($weeks) - 1) {
+                                    // Last column index
+                                    $sql .= "(SELECT CONCAT(
+                                    \"₱ \", FORMAT(
+                                            SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)
+                                             - SUM(`$app_order_product`.`discount`), 2
+                                            )
+                                    ) AS `Gross Profit` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` >= '{$weekRange[$j][0]}' AND `order_date` < (DATE('{$weekRange[$j][1]}') + INTERVAL 1 DAY) AND `$app_order`.`customer_id` = '{$_POST["data"]["rowId"]}') AS `$weeks[$j]`, ";
+                                } else {
+                                    $sql .= "(SELECT CONCAT(\"₱ \", FORMAT(
+                                    SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`$app_order_product`.`discount`), 2)
+                                    ) AS `$weeks[$j]` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` >= '{$weekRange[$j][0]}' AND `order_date` < (DATE('{$weekRange[$j][1]}') + INTERVAL 1 DAY) AND `$app_order`.`customer_id` = '{$_POST["data"]["rowId"]}') AS `$weeks[$j]`, ";
+                                }
                             }
+                            $sql = substr($sql, 0, -2) . " UNION ";
                         }
-                        $sql = substr($sql, 0, -2) . " UNION ";
+                        $sql = substr($sql, 0, -8) . "`;";
+                        $result = Database::Read($connection, $sql);
+                        $data[] = $result;
+                    } else {
+                        $grossSalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE $weeklyCondition";
+                        $monthlySales = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE month(`order_date`) = '%s' AND year(`order_date`) = '%s'";
+                        $tableDetails = [
+                            "Month" => $months,
+                            "Week 1 (1 - 7)" => $grossSalesSql,
+                            "Week 2 (8 - 14)" => $grossSalesSql,
+                            "Week 3 (15 - 21)" => $grossSalesSql,
+                            "Week 4 (22 - 31)" => $grossSalesSql,
+                            "Gross Sales" => $monthlySales,
+                        ];
+                        $weekRange = [
+                            ["%u-%s-01", "%u-%s-07"],
+                            ["%u-%s-08", "%u-%s-14"],
+                            ["%u-%s-15", "%u-%s-21"],
+                            ["%u-%s-22", "%u-%s-%u"],
+                            ["%u-%s-01", "%u-%s-%u"],
+                        ];
+                        $result = Database::read($connection, monthlyReportsBuilder($months, $tableDetails, $weekRange, $year));
+                        $data[] = $result;
                     }
-                    $sql = substr($sql, 0, -8) . "`;";
-                    $result = Database::Read($connection, $sql);
-                    $data[] = $result;
 
                     // Weekly
                     $weekDates = Tools::getWeekDates($year, $_POST["data"]["selectedWeek"]);
@@ -111,10 +147,13 @@ if ($_POST || $_FILES) {
                     $sql = "SELECT '{$_POST["data"]["rowId"]}' AS `Customer ID`, `customer_name` AS `Customer Name`, $daysString, `Gross Sales`, `Gross Profit` FROM";
                     $sql .= "(SELECT CONCAT(`first_name`, ' ', `last_name`) AS `customer_name` FROM `$app_customer` WHERE `$app_customer`.`customer_id` = '{$_POST["data"]["rowId"]}') AS `customer_name`,";
                     for ($i = 0; $i < count($days); $i++) {
-                        $sql .= "(SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - `$app_order_product`.`discount`, 2)) AS `{$days[$i]}` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` = '{$weekDates[$i]}' AND `$app_order`.`customer_id` = '{$_POST["data"]["rowId"]}') AS `{$days[$i]}`, ";
+                        $sql .= "(SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`$app_order_product`.`discount`), 2)) AS `{$days[$i]}` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` = '{$weekDates[$i]}' AND `$app_order`.`customer_id` = '{$_POST["data"]["rowId"]}') AS `{$days[$i]}`, ";
                     }
-                    $sql .= "(SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - `$app_order_product`.`discount`, 2)) AS `Gross Sales` FROM `$app_order_product` INNER JOIN `$app_order` ON `$app_order_product`.`order_id` = `$app_order`.`order_id` WHERE `$app_order`.`order_date` BETWEEN '{$weekDates[0]}' AND '{$weekDates[6]}' AND `$app_order`.`customer_id` = '{$_POST["data"]["rowId"]}') AS `Gross Sales`, ";
-                    $sql .= "(SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - `$app_order_product`.`discount`, 2)) AS `Gross Profit` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '{$weekDates[0]}' AND '{$weekDates[6]}' AND `$app_order`.`customer_id` = '{$_POST["data"]["rowId"]}') AS `Gross Profit`";
+                    $sql .= "(SELECT CONCAT(\"₱ \", FORMAT(
+                        SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`$app_order_product`.`discount`), 2
+                        )) AS `Gross Sales` FROM `$app_order_product` INNER JOIN `$app_order` ON `$app_order_product`.`order_id` = `$app_order`.`order_id` WHERE `$app_order`.`order_date` BETWEEN '{$weekDates[0]}' AND '{$weekDates[6]}' AND `$app_order`.`customer_id` = '{$_POST["data"]["rowId"]}') AS `Gross Sales`, ";
+                    $sql .= "(SELECT CONCAT(\"₱ \", FORMAT(
+                        SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity` - `$app_order_product`.`product_cost`*`$app_order_product`.`quantity`) - SUM(`$app_order_product`.`discount`), 2)) AS `Gross Profit` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '{$weekDates[0]}' AND '{$weekDates[6]}' AND `$app_order`.`customer_id` = '{$_POST["data"]["rowId"]}') AS `Gross Profit`";
                     $result = Database::Read($connection, $sql);
                     $data[] = $result;
                     //======================================CUSTOMER======================================//
@@ -133,7 +172,7 @@ if ($_POST || $_FILES) {
                 $products = Database::read($connection, "SELECT `$app_order_product`.`product_id` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id` = `$app_order_product`.`order_id` WHERE YEAR(`order_date`) = $year AND `$app_order`.`customer_id` = '$customer' GROUP BY `product_id`");
                 $unions = [];
                 foreach ($products as $product) {
-                    $monthlySql = "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order_product` INNER JOIN `$app_order` ON `$app_order_product`.`order_id` = `$app_order`.`order_id` WHERE `product_id` = '{$product["product_id"]}' AND `$app_order`.`order_date` BETWEEN '$year-%u-01' AND '$year-%u-31' AND `$app_order`.`customer_id` = '$customer'";
+                    $monthlySql = "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order_product` INNER JOIN `$app_order` ON `$app_order_product`.`order_id` = `$app_order`.`order_id` WHERE `product_id` = '{$product["product_id"]}' AND `$app_order`.`order_date` >= '$year-%u-01' AND `order_date` < (DATE('$year-%u-%u') + INTERVAL 1 DAY) AND `$app_order`.`customer_id` = '$customer'";
                     $annual = "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order_product` INNER JOIN `$app_order` ON `$app_order_product`.`order_id` = `$app_order`.`order_id` WHERE `product_id` = '{$product["product_id"]}' AND YEAR(`order_date`) = $year AND `$app_order`.`customer_id` = '$customer'";
                     $tableDetails = [
                         "Product ID" => "SELECT '{$product["product_id"]}' AS `%s` FROM `$app_product`",
@@ -153,9 +192,10 @@ if ($_POST || $_FILES) {
                         "Total" => $annual,
                     ];
 
-                    $unions[] = monthlyBuilder($tableDetails);
+                    $unions[] = monthlyBuilder($year, $tableDetails);
                 }
                 $sql = implode(" UNION ", $unions);
+
                 $boughtProducts = Database::read($connection, $sql);
                 if (!$boughtProducts) {
                     $boughtProducts = [[
@@ -180,29 +220,34 @@ if ($_POST || $_FILES) {
                 //==============MONTHLY=BOUGHT=PRODUCTS==============//
 
                 //==============WEEKLY=BOUGHT=PRODUCTS==============//
-                $products = Database::read($connection, "SELECT `$app_order_product`.`product_id` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id` = `$app_order_product`.`order_id` WHERE `$app_order`.`order_date` BETWEEN '$weekDays[0]' AND '$weekDays[6]' AND `$app_order`.`customer_id` = '$customer' GROUP BY `product_id`");
+                $products = Database::read($connection, "SELECT `$app_order_product`.`product_id` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id` = `$app_order_product`.`order_id` WHERE `$app_order`.`order_date` BETWEEN '$weekDays[0]' AND '$weekDays[6]' AND `$app_order`.`customer_id` = '$customer' GROUP BY `product_id`;");
                 $unions = [];
-                foreach ($products as $product) {
-                    $weekDaysSql = [];
-                    for ($i = 0; $i < count($weekDays); $i++) {
-                        $weekDaysSql[] = "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order_product` INNER JOIN `$app_order` ON `$app_order_product`.`order_id` = `$app_order`.`order_id` WHERE `product_id` = '{$product["product_id"]}' AND `$app_order`.`order_date` = '$weekDays[$i]' AND `$app_order`.`customer_id` = '$customer'";
+                $boughtProducts = [];
+
+                if ($products) {
+                    foreach ($products as $product) {
+                        $weekDaysSql = [];
+                        for ($i = 0; $i < count($weekDays); $i++) {
+                            $weekDaysSql[] = "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order_product` INNER JOIN `$app_order` ON `$app_order_product`.`order_id` = `$app_order`.`order_id` WHERE `product_id` = '{$product["product_id"]}' AND `$app_order`.`order_date` = '$weekDays[$i]' AND `$app_order`.`customer_id` = '$customer'";
+                        }
+                        $tableDetails = [
+                            "Product ID" => "SELECT '{$product["product_id"]}' AS `%s` FROM `$app_product`",
+                            "Product Name" => "SELECT `product_name` AS `%s` FROM `$app_product` WHERE `product_id` = '{$product["product_id"]}'",
+                            "Sunday" => $weekDaysSql[0],
+                            "Monday" => $weekDaysSql[1],
+                            "Tuesday" => $weekDaysSql[2],
+                            "Wednesday" => $weekDaysSql[3],
+                            "Thursday" => $weekDaysSql[4],
+                            "Friday" => $weekDaysSql[5],
+                            "Saturday" => $weekDaysSql[6],
+                            "Total" => "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order_product` INNER JOIN `$app_order` ON `$app_order_product`.`order_id` = `$app_order`.`order_id` WHERE `product_id` = '{$product["product_id"]}' AND `$app_order`.`order_date` BETWEEN '$weekDays[0]' AND '$weekDays[6]' AND `$app_order`.`customer_id` = '$customer'",
+                        ];
+                        $unions[] = monthlyBuilder($year, $tableDetails);
                     }
-                    $tableDetails = [
-                        "Product ID" => "SELECT '{$product["product_id"]}' AS `%s` FROM `$app_product`",
-                        "Product Name" => "SELECT `product_name` AS `%s` FROM `$app_product` WHERE `product_id` = '{$product["product_id"]}'",
-                        "Sunday" => $weekDaysSql[0],
-                        "Monday" => $weekDaysSql[1],
-                        "Tuesday" => $weekDaysSql[2],
-                        "Wednesday" => $weekDaysSql[3],
-                        "Thursday" => $weekDaysSql[4],
-                        "Friday" => $weekDaysSql[5],
-                        "Saturday" => $weekDaysSql[6],
-                        "Total" => "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order_product` INNER JOIN `$app_order` ON `$app_order_product`.`order_id` = `$app_order`.`order_id` WHERE `product_id` = '{$product["product_id"]}' AND `$app_order`.`order_date` BETWEEN '$weekDays[0]' AND '$weekDays[6]' AND `$app_order`.`customer_id` = '$customer'",
-                    ];
-                    $unions[] = monthlyBuilder($tableDetails);
+                    $sql = implode(" UNION ", $unions);
+                    $boughtProducts = Database::read($connection, $sql);
                 }
-                $sql = implode(" UNION ", $unions);
-                $boughtProducts = Database::read($connection, $sql);
+
                 if (!$boughtProducts) {
                     $boughtProducts = [[
                         "Product ID" => "",
@@ -230,7 +275,7 @@ if ($_POST || $_FILES) {
                 $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
                 //==============MONTHLY=GROSS=SALES==============//
-                $grossSalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` >= '%s' AND `order_date` < (DATE('%s') + INTERVAL 1 DAY)";
+                $grossSalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE $weeklyCondition";
                 $monthlySales = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE month(`order_date`) = '%s' AND year(`order_date`) = '%s'";
                 $tableDetails = [
                     "Month" => $months,
@@ -251,7 +296,7 @@ if ($_POST || $_FILES) {
                 //==============MONTHLY=GROSS=SALES==============//
 
                 //==============MONTHLY=GROSS=PROFIT==============//
-                $grossProfitSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` >= '%s' AND `order_date` < (DATE('%s') + INTERVAL 1 DAY)";
+                $grossProfitSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE $weeklyCondition";
                 $monthlyProfit = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE month(`order_date`) = '%s' AND year(`order_date`) = '%s'";
                 $tableDetails = [
                     "Month" => $months,
@@ -272,7 +317,7 @@ if ($_POST || $_FILES) {
                 //==============MONTHLY=GROSS=PROFIT==============//
 
                 //==============WEEKLY=GROSS=SALES==============//
-                $daySalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` >= '%s' AND `order_date` < (DATE('%s') + 1)";
+                $daySalesSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE $weeklyCondition";
                 $weeklyGrossSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '{$weekDates[0]}' AND '{$weekDates[6]}'";
                 $tableDetails = [
                     date("l", strtotime($weekDates[0])) => $daySalesSql,
@@ -288,7 +333,7 @@ if ($_POST || $_FILES) {
                 //==============WEEKLY=GROSS=SALES==============//
 
                 //==============WEEKLY=GROSS=PROFIT==============//
-                $dayProfitSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` >= '%s' AND `order_date` < (DATE('%s') + 1)";
+                $dayProfitSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE $weeklyCondition";
                 $weeklyGrossSql = "SELECT CONCAT(\"₱ \", FORMAT(SUM((`$app_order_product`.`product_price`*`$app_order_product`.`quantity`) - (`$app_order_product`.`product_cost`*`$app_order_product`.`quantity`)) - SUM(`$app_order_product`.`discount`), 2)) AS `%s` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id`=`$app_order_product`.`order_id` WHERE `order_date` BETWEEN '{$weekDates[0]}' AND '{$weekDates[6]}'";
                 $tableDetails = [
                     date("l", strtotime($weekDates[0])) => $dayProfitSql,
@@ -333,6 +378,7 @@ function monthlyReportsBuilder($months, $tableDetails, $weekRange, $year)
     $columnNames = array_keys($tableDetails);
     for ($i = 0; $i < count($months); $i++) {
         $month = ($i + 1) < 10 ? "0" . ($i + 1) : ($i + 1);
+        $maxDaysInAMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
         $sql = "SELECT '$months[$i]' AS `" . implode("`, `", $columnNames) . "` FROM ";
 
         for ($weekIndex = 0; $weekIndex < count($tableDetails); $weekIndex++) {
@@ -379,7 +425,6 @@ function monthlyReportsBuilder($months, $tableDetails, $weekRange, $year)
 
                     // Week 4 and gross
                     if ($is4thWeek) {
-                        $maxDaysInAMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
 
                         $sql .= "(" . sprintf(
                             // SELECT...AS `%s`...BETWEEN '%s' AND '%s'
@@ -418,7 +463,6 @@ function monthlyReportsBuilder($months, $tableDetails, $weekRange, $year)
 
                     // Gross
                     if ($isGross) {
-                        $maxDaysInAMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
 
                         $sql .= "(" . sprintf(
                             // SELECT...AS `%s`...WHERE month(`order_date`) = '%s' AND year(`order_date`) = '%s'
@@ -457,7 +501,7 @@ function weeklyReportsBuilder($weekDates, $tableDetails)
     return substr($sql, 0, -2) . ";";
 }
 
-function monthlyBuilder($tableDetails)
+function monthlyBuilder($year, $tableDetails)
 {
     $columnNames = array_keys($tableDetails);
     $sql = "SELECT DISTINCT `" . implode("`, `", $columnNames) . "` FROM ";
@@ -466,7 +510,8 @@ function monthlyBuilder($tableDetails)
             $sql .= "(" . sprintf($tableDetails[$columnNames[$i]], $columnNames[$i]) . ") AS `{$columnNames[$i]}`, ";
         } else {
             $month = ($i - 1) < 10 ? "0" . ($i - 1) : ($i - 1);
-            $sql .= "(" . sprintf($tableDetails[$columnNames[$i]], $columnNames[$i], $month, $month) . ") AS `{$columnNames[$i]}`, ";
+            $maxDaysInAMonth = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+            $sql .= "(" . sprintf($tableDetails[$columnNames[$i]], $columnNames[$i], $month, $month, $maxDaysInAMonth) . ") AS `{$columnNames[$i]}`, ";
         }
     }
     return substr($sql, 0, -2);
