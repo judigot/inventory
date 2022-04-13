@@ -8,7 +8,7 @@ const auto = new SequelizeAuto(
   {
     host: process.env.DB_HOST,
     dialect: process.env.DB_CONNECTION,
-    directory: "./models", // where to write files
+    directory: "./sequelize/models", // where to write files
     port: process.env.DB_PORT,
     // caseModel: "c", // convert snake_case column names to camelCase field names: user_id -> userId
     caseFile: "c", // file names created for each model use camelCase.js not snake_case.js

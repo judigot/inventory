@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-var Model = require("./../models");
+var Model = require("./../sequelize/models");
 
 Model.sequelize
   .query("SET FOREIGN_KEY_CHECKS = 0;")
