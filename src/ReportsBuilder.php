@@ -7,7 +7,7 @@ $iterators = [$months, $numbers];
 $year = 2018;
 $weeklyQuery = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`app_order_product`.`product_price`*`app_order_product`.`quantity`) - SUM(`app_order_product`.`discount`), 2)) FROM `app_order` INNER JOIN `app_order_product` ON `app_order`.`order_id`=`app_order_product`.`order_id` WHERE `order_date` >= '%s' AND `order_date` < (DATE('%s') + INTERVAL 1 DAY)";
 $monthlyQuery = "SELECT CONCAT(\"₱ \", FORMAT(SUM(`app_order_product`.`product_price`*`app_order_product`.`quantity`) - SUM(`app_order_product`.`discount`), 2)) FROM `app_order` INNER JOIN `app_order_product` ON `app_order`.`order_id`=`app_order_product`.`order_id` WHERE `order_date` >= '%s' AND `order_date` < (DATE('%s') + INTERVAL 1 DAY)";
-$table = [
+$reportTable = [
     "Month" => $months,
     "Customer Name" => $customer,
     "Custom Identifier" => $numbers,
@@ -85,42 +85,43 @@ $table = [
 
 
 // joinBuilder()
-// $customerID = 1;
-// $monthlyQuery = "SELECT COALESCE(SUM(`quantity`), '-') FROM `app_order` JOIN `app_order_product` USING(`order_id`) JOIN `app_customer` USING(`customer_id`) WHERE `app_order_product`.`product_id` = `Product ID` AND `app_customer`.`customer_id` = $customerID AND `app_order_product`.`order_id` = `app_order`.`order_id` AND MONTH(`order_date`) = '%u'";
-// $table = [
-//     "Product ID" => function ($index) {
-//         return "SELECT `app_order_product`.`product_id`";
-//     },
-//     "Product Name" => function ($index) {
-//         return "SELECT `app_product`.`product_name`";
-//     },
-//     "FROM `app_order` JOIN `app_order_product` USING(`order_id`) JOIN `app_product` USING(`product_id`) JOIN `app_customer` USING(`customer_id`) WHERE `app_order`.`customer_id` = 1 AND YEAR(`app_order`.`order_date`) = $year GROUP BY `app_product`.`product_id`"
-// ];
-// //====================ASSIGN MONTHS TO CLOSURE====================//
-// $lastIndex = array_keys($table)[count(array_keys($table)) - 1];
-// $lastElement = $table[$lastIndex];
-// unset($table[$lastIndex]);
-// for ($i = 0; $i < count($months); $i++) {
-//     $monthsFormatter = [
-//         "$months[$i]" => function ($index) use ($monthlyQuery) {
-//             // Adjust index based on "January" index (how many elements are there before January)
-//             $index = $index - 2;
-//             $month = ($index + 1) < 10 ? "0" . ($index + 1) : ($index + 1);
-//             return sprintf(
-//                 $monthlyQuery,
-//                 // Replacements
-//                 $month,
-//             );
-//         },
-//     ];
-//     $table[$months[$i]] = $monthsFormatter[$months[$i]];
-// }
-// array_push($table, $lastElement);
+$customerID = 1;
+$monthlyQuery = "SELECT COALESCE(SUM(`quantity`), '-') FROM `app_order` JOIN `app_order_product` USING(`order_id`) JOIN `app_customer` USING(`customer_id`) WHERE `app_order_product`.`product_id` = `Product ID` AND `app_customer`.`customer_id` = $customerID AND `app_order_product`.`order_id` = `app_order`.`order_id` AND MONTH(`order_date`) = '%u'";
+$joinTable = [
+    "Product ID" => function ($index) {
+        return "SELECT `app_order_product`.`product_id`";
+    },
+    "Product Name" => function ($index) {
+        return "SELECT `app_product`.`product_name`";
+    },
+    "FROM `app_order` JOIN `app_order_product` USING(`order_id`) JOIN `app_product` USING(`product_id`) JOIN `app_customer` USING(`customer_id`) WHERE `app_order`.`customer_id` = 1 AND YEAR(`app_order`.`order_date`) = $year GROUP BY `app_product`.`product_id`"
+];
+//====================ASSIGN MONTHS TO CLOSURE====================//
+$lastIndex = array_keys($joinTable)[count(array_keys($joinTable)) - 1];
+$lastElement = $joinTable[$lastIndex];
+unset($joinTable[$lastIndex]);
+for ($i = 0; $i < count($months); $i++) {
+    $monthsFormatter = [
+        "$months[$i]" => function ($index) use ($monthlyQuery) {
+            // Adjust index based on "January" index (how many elements are there before January)
+            $index = $index - 2;
+            $month = ($index + 1) < 10 ? "0" . ($index + 1) : ($index + 1);
+            return sprintf(
+                $monthlyQuery,
+                // Replacements
+                $month,
+            );
+        },
+    ];
+    $joinTable[$months[$i]] = $monthsFormatter[$months[$i]];
+}
+array_push($joinTable, $lastElement);
 //====================ASSIGN MONTHS TO CLOSURE====================//
 
-$sql = joinBuilder($table);
-$sql = reportBuilder(count($months), $table);
+// $sql = joinBuilder($joinTable);
+// echo $sql;
 
+$sql = reportBuilder(count($months), $reportTable);
 echo $sql;
 
 function joinBuilder($table)

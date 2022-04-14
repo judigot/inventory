@@ -365,10 +365,10 @@ function report_loadFinancialReports() {
         )[0].innerHTML =
           weekdays[dayOfTheWeek] + ` <br>(${month} ` + `${day}, ${year})`;
 
-          document.getElementsByClassName(
-            `${i}-weeklyGrossProfitTable-th-qt`
-          )[0].innerHTML =
-            weekdays[dayOfTheWeek] + ` <br>(${month} ` + `${day}, ${year})`;
+        document.getElementsByClassName(
+          `${i}-weeklyGrossProfitTable-th-qt`
+        )[0].innerHTML =
+          weekdays[dayOfTheWeek] + ` <br>(${month} ` + `${day}, ${year})`;
       }
     })
     .fail(function (data) {});

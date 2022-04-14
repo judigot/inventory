@@ -22,7 +22,7 @@ if ($_POST || $_FILES) {
                     "currentWeek" => Tools::getCurrentWeekNumber(),
                     "maxWeekNumber" => 52,
                 );
-                echo json_encode($data);
+                die(json_encode($data));
             }
 
             if ($_POST['read'] == "getSalesSummary") {
@@ -159,7 +159,7 @@ if ($_POST || $_FILES) {
                     //======================================CUSTOMER======================================//
                 }
 
-                echo json_encode($data);
+                die(json_encode($data));
             }
 
             if ($_POST['read'] == "getBoughtProducts") {
@@ -171,33 +171,34 @@ if ($_POST || $_FILES) {
                 //==============MONTHLY=BOUGHT=PRODUCTS==============//
                 $products = Database::read($connection, "SELECT `$app_order_product`.`product_id` FROM `$app_order` INNER JOIN `$app_order_product` ON `$app_order`.`order_id` = `$app_order_product`.`order_id` WHERE YEAR(`order_date`) = $year AND `$app_order`.`customer_id` = '$customer' GROUP BY `product_id`");
                 $unions = [];
-                foreach ($products as $product) {
-                    $monthlySql = "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order_product` INNER JOIN `$app_order` ON `$app_order_product`.`order_id` = `$app_order`.`order_id` WHERE `product_id` = '{$product["product_id"]}' AND `$app_order`.`order_date` >= '$year-%u-01' AND `order_date` < (DATE('$year-%u-%u') + INTERVAL 1 DAY) AND `$app_order`.`customer_id` = '$customer'";
-                    $annual = "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order_product` INNER JOIN `$app_order` ON `$app_order_product`.`order_id` = `$app_order`.`order_id` WHERE `product_id` = '{$product["product_id"]}' AND YEAR(`order_date`) = $year AND `$app_order`.`customer_id` = '$customer'";
-                    $tableDetails = [
-                        "Product ID" => "SELECT '{$product["product_id"]}' AS `%s` FROM `$app_product`",
-                        "Product Name" => "SELECT `product_name` AS `%s` FROM `$app_product` WHERE `product_id` = '{$product["product_id"]}'",
-                        "January" => $monthlySql,
-                        "February" => $monthlySql,
-                        "March" => $monthlySql,
-                        "April" => $monthlySql,
-                        "May" => $monthlySql,
-                        "June" => $monthlySql,
-                        "July" => $monthlySql,
-                        "August" => $monthlySql,
-                        "September" => $monthlySql,
-                        "October" => $monthlySql,
-                        "November" => $monthlySql,
-                        "December" => $monthlySql,
-                        "Total" => $annual,
-                    ];
+                $boughtProducts = [];
+                if ($products) {
+                    foreach ($products as $product) {
+                        $monthlySql = "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order_product` INNER JOIN `$app_order` ON `$app_order_product`.`order_id` = `$app_order`.`order_id` WHERE `product_id` = '{$product["product_id"]}' AND `$app_order`.`order_date` >= '$year-%u-01' AND `order_date` < (DATE('$year-%u-%u') + INTERVAL 1 DAY) AND `$app_order`.`customer_id` = '$customer'";
+                        $annual = "SELECT COALESCE(SUM(`quantity`), '-') AS `%s` FROM `$app_order_product` INNER JOIN `$app_order` ON `$app_order_product`.`order_id` = `$app_order`.`order_id` WHERE `product_id` = '{$product["product_id"]}' AND YEAR(`order_date`) = $year AND `$app_order`.`customer_id` = '$customer'";
+                        $tableDetails = [
+                            "Product ID" => "SELECT '{$product["product_id"]}' AS `%s` FROM `$app_product`",
+                            "Product Name" => "SELECT `product_name` AS `%s` FROM `$app_product` WHERE `product_id` = '{$product["product_id"]}'",
+                            "January" => $monthlySql,
+                            "February" => $monthlySql,
+                            "March" => $monthlySql,
+                            "April" => $monthlySql,
+                            "May" => $monthlySql,
+                            "June" => $monthlySql,
+                            "July" => $monthlySql,
+                            "August" => $monthlySql,
+                            "September" => $monthlySql,
+                            "October" => $monthlySql,
+                            "November" => $monthlySql,
+                            "December" => $monthlySql,
+                            "Total" => $annual,
+                        ];
 
-                    $unions[] = monthlyBuilder($year, $tableDetails);
-                }
-                $sql = implode(" UNION ", $unions);
-
-                $boughtProducts = Database::read($connection, $sql);
-                if (!$boughtProducts) {
+                        $unions[] = monthlyBuilder($year, $tableDetails);
+                    }
+                    $sql = implode(" UNION ", $unions);
+                    $boughtProducts = Database::read($connection, $sql);
+                } else {
                     $boughtProducts = [[
                         "Product ID" => "",
                         "Product Name" => "",
@@ -265,7 +266,7 @@ if ($_POST || $_FILES) {
                 $data[] = $boughtProducts;
                 //==============WEEKLY=BOUGHT=PRODUCTS==============//
 
-                echo json_encode($data);
+                die(json_encode($data));
             }
 
             if ($_POST['read'] == "getFinancialReports") {
