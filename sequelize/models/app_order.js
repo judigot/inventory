@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('app_custom_price', {
-    custom_price_id: {
+  return sequelize.define('app_order', {
+    order_id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -15,36 +15,24 @@ module.exports = function(sequelize, DataTypes) {
         key: 'customer_id'
       }
     },
-    product_id: {
-      type: DataTypes.INTEGER,
+    order_date: {
+      type: DataTypes.DATE,
       allowNull: false,
-      references: {
-        model: 'app_product',
-        key: 'product_id'
-      }
-    },
-    custom_price: {
-      type: DataTypes.FLOAT,
-      allowNull: true
+      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     }
   }, {
     sequelize,
-    tableName: 'app_custom_price',
+    tableName: 'app_order',
     timestamps: false,
+    charset: 'utf8',
+    collate: 'utf8_general_ci',
     indexes: [
       {
         name: "PRIMARY",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "custom_price_id" },
-        ]
-      },
-      {
-        name: "product_id",
-        using: "BTREE",
-        fields: [
-          { name: "product_id" },
+          { name: "order_id" },
         ]
       },
       {

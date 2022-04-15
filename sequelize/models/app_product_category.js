@@ -1,36 +1,29 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('app_user', {
-    user_id: {
+  return sequelize.define('app_product_category', {
+    category_id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    username: {
+    category_name: {
       type: DataTypes.STRING(255),
       allowNull: false
-    },
-    password: {
-      type: DataTypes.STRING(255),
-      allowNull: false
-    },
-    user_type: {
-      type: DataTypes.ENUM('administrator','secretary'),
-      allowNull: false,
-      defaultValue: "secretary"
     }
   }, {
     sequelize,
-    tableName: 'app_user',
+    tableName: 'app_product_category',
     timestamps: false,
+    charset: 'utf8',
+    collate: 'utf8_general_ci',
     indexes: [
       {
         name: "PRIMARY",
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "user_id" },
+          { name: "category_id" },
         ]
       },
     ]

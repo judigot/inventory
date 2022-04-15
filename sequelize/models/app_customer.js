@@ -177,6 +177,8 @@ module.exports = function(sequelize, DataTypes) {
     sequelize,
     tableName: 'app_customer',
     timestamps: false,
+    charset: 'utf8',
+    collate: 'utf8_general_ci',
     indexes: [
       {
         name: "PRIMARY",

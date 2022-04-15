@@ -1,24 +1,41 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('app_product_category', {
-    category_id: {
+  return sequelize.define('variant_color', {
+    id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    category_name: {
+    color_name: {
       type: DataTypes.STRING(255),
       allowNull: false
+    },
+    category_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'app_product_category',
+        key: 'category_id'
+      }
     }
   }, {
     sequelize,
-    tableName: 'app_product_category',
+    tableName: 'variant_color',
     timestamps: false,
+    charset: 'utf8',
+    collate: 'utf8_general_ci',
     indexes: [
       {
         name: "PRIMARY",
         unique: true,
+        using: "BTREE",
+        fields: [
+          { name: "id" },
+        ]
+      },
+      {
+        name: "category_id",
         using: "BTREE",
         fields: [
           { name: "category_id" },
