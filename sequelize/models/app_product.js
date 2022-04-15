@@ -21,7 +21,7 @@ module.exports = function (sequelize, DataTypes) {
           key: "category_id",
         },
       },
-      //===========================//
+      //=============EXPERIMENTAL==============//
       // color_id: {
       //   type: DataTypes.INTEGER,
       //   allowNull: false,
@@ -38,7 +38,7 @@ module.exports = function (sequelize, DataTypes) {
       //     key: "id",
       //   },
       // },
-      //===========================//
+      //=============EXPERIMENTAL==============//
       product_cost: {
         type: DataTypes.FLOAT,
         allowNull: true,
