@@ -9,7 +9,7 @@ Model.sequelize
     // Re-build tables
     Model.sequelize
       .sync({
-        force: true,
+        force: true, // Preserves the column order when modified
         alter: true,
         logging: false,
       })
