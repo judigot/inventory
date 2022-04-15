@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+var { exit } = require("process");
 var Model = require("./../models");
 
 Model.sequelize
@@ -15,7 +16,7 @@ Model.sequelize
       .then(function () {
         Model.sequelize.query("SET FOREIGN_KEY_CHECKS = 1;").then(function () {
           console.log("Successfully updated table structure.");
-          // exit();
+          exit();
         });
       })
       .catch(function (error) {
