@@ -14,6 +14,8 @@ const auto = new SequelizeAuto(
     caseFile: "c", // file names created for each model use camelCase.js not snake_case.js
     singularize: true, // convert plural table names to singular model names
     additional: {
+      charset: "utf8",
+      collate: "utf8_general_ci",
       // timestamps: true,
       // ...options added to each model
     },
