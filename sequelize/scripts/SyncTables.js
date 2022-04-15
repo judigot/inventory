@@ -9,7 +9,7 @@ Model.sequelize
     // Re-build tables
     Model.sequelize
       .sync({
-        // force: true,
+        force: true,
         alter: true,
         logging: false,
       })
