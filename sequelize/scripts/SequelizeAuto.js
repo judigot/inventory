@@ -16,12 +16,12 @@ const auto = new SequelizeAuto(
     // caseFile: "c", // File names created for each model use camelCase.js not snake_case.js
     additional: {
       // Options added to each model
+      // tables: ["Users", "Posts"], // Use all tables, if omitted
 
       // timestamps: true,
       charset: "utf8",
       collate: "utf8_general_ci",
     },
-    // tables: ["Users", "Posts"], // use all tables, if omitted
   }
 );
 
