@@ -7,6 +7,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
+    first_name: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
     last_name: {
       type: DataTypes.STRING(255),
       allowNull: true
@@ -168,10 +172,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.FLOAT,
       allowNull: false,
       defaultValue: 0
-    },
-    first_name: {
-      type: DataTypes.STRING(255),
-      allowNull: true
     }
   }, {
     sequelize,
