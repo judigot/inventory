@@ -10,14 +10,16 @@ const auto = new SequelizeAuto(
     dialect: process.env.DB_CONNECTION,
     directory: "./sequelize/models", // where to write files
     port: process.env.DB_PORT,
-    // caseModel: "c", // convert snake_case column names to camelCase field names: user_id -> userId
-    // caseFile: "c", // file names created for each model use camelCase.js not snake_case.js
-    singularize: true, // convert plural table names to singular model names
+    noInitModels: true, // Prevent writing the init-models.js file
+    singularize: true, // Singularize model and file names from plural table
+    // caseModel: "c", // Convert snake_case column names to camelCase field names: user_id -> userId
+    // caseFile: "c", // File names created for each model use camelCase.js not snake_case.js
     additional: {
+      // Options added to each model
+
+      // timestamps: true,
       charset: "utf8",
       collate: "utf8_general_ci",
-      // timestamps: true,
-      // ...options added to each model
     },
     // tables: ["Users", "Posts"], // use all tables, if omitted
   }
