@@ -21,24 +21,6 @@ module.exports = function (sequelize, DataTypes) {
           key: "category_id",
         },
       },
-      //=============EXPERIMENTAL==============//
-      // color_id: {
-      //   type: DataTypes.INTEGER,
-      //   allowNull: false,
-      //   references: {
-      //     model: "variant_color",
-      //     key: "id",
-      //   },
-      // },
-      // size_id: {
-      //   type: DataTypes.INTEGER,
-      //   allowNull: false,
-      //   references: {
-      //     model: "variant_size",
-      //     key: "id",
-      //   },
-      // },
-      //=============EXPERIMENTAL==============//
       product_cost: {
         type: DataTypes.FLOAT,
         allowNull: true,
@@ -59,6 +41,24 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         defaultValue: "active",
       },
+      //=============EXPERIMENTAL==============//
+      product: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "products",
+          key: "id",
+        },
+      },
+      size_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: "variant_sizes",
+          key: "id",
+        },
+      },
+      //=============EXPERIMENTAL==============//
     },
     {
       sequelize,

@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define(
-    "variant_size",
+    "products",
     {
       id: {
         autoIncrement: true,
@@ -9,26 +9,22 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         primaryKey: true,
       },
-      size_name: {
+      product_name: {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
-      category_id: {
+      product_category: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        //==========FOREIGN KEY==========//
-        onUpdate: "CASCADE",
-        onDelete: "CASCADE", // Deletes the child rows when parent row is deleted
         references: {
           model: "app_product_category",
           key: "category_id",
         },
-        //==========FOREIGN KEY==========//
       },
     },
     {
       sequelize,
-      tableName: "variant_sizes",
+      tableName: "products",
       timestamps: false,
       charset: "utf8",
       collate: "utf8_general_ci",
@@ -40,9 +36,9 @@ module.exports = function (sequelize, DataTypes) {
           fields: [{ name: "id" }],
         },
         {
-          name: "category_id",
+          name: "product_category",
           using: "BTREE",
-          fields: [{ name: "category_id" }],
+          fields: [{ name: "product_category" }],
         },
       ],
     }
