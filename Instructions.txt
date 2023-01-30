@@ -2,8 +2,9 @@ For XAMPP:
 
     1. Download the compatible version of XAMPP:
         https://sourceforge.net/projects/xampp/files/XAMPP%20Windows/8.0.0/xampp-portable-windows-x64-8.0.0-0-VS16.7z/download
-
-    2. Go to C:\xampp\apache\conf\extra
+        
+    
+    *if Apache won't start, go to "C:\xampp\apache\conf\extra"
        - Open "httpd-xampp.conf"
        - Replace all "php8_module" with "php_module"
        - Save Changes
