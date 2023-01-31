@@ -45,7 +45,7 @@ $columns = array(
     array('db' => 'product_name', 'dt' => 1,
         'formatter' => function( $d, $row ) {
             $columnIndex = 1;
-            return "<span data-table-type='product' data-column-index='$columnIndex' value='$d' class='product-name" . ($row["product_stock"] === "0" ? " no-stock" : "") ."'>$d</span>";
+            return "<span data-table-type='product' data-column-index='$columnIndex' value='" . htmlspecialchars($d, ENT_QUOTES, "UTF-8") . "' class='product-name" . ($row["product_stock"] === "0" ? " no-stock" : "") ."'>$d</span>";
         }
     ),
     array('db' => 'product_category', 'dt' => 2,
@@ -56,7 +56,7 @@ $columns = array(
 
             $categoryName = $result[0]["category_name"];
 
-            return "<span data-table-type='product' data-column-index='$columnIndex' value='$d' class='category-name'>$categoryName</span>";
+            return "<span data-table-type='product' data-column-index='$columnIndex' value='" . htmlspecialchars($d, ENT_QUOTES, "UTF-8") . "' class='category-name'>$categoryName</span>";
         }
     ),
     array('db' => 'product_cost', 'dt' => 3,
@@ -74,7 +74,7 @@ $columns = array(
     array('db' => 'product_stock', 'dt' => 5,
         'formatter' => function( $d, $row ) {
             $columnIndex = 5;
-            return "<span data-table-type='product' data-column-index='$columnIndex' class='" . ($row["product_stock"] === "0" ? " no-stock" : "") ."' value='$d'>$d</span>";
+            return "<span data-table-type='product' data-column-index='$columnIndex' class='" . ($row["product_stock"] === "0" ? " no-stock" : "") ."' value='" . htmlspecialchars($d, ENT_QUOTES, "UTF-8") . "'>$d</span>";
         }
     )
 );

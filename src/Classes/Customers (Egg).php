@@ -48,28 +48,28 @@ $columns = array(
         'db' => 'first_name', 'dt' => 1,
         'formatter' => function ($d, $row) {
             $columnIndex = 1;
-            return "<span data-table-type='customer' data-column-index='$columnIndex' value='$d'>$d</span>";
+            return "<span data-table-type='customer' data-column-index='$columnIndex' value='" . htmlspecialchars($d, ENT_QUOTES, "UTF-8") . "'>$d</span>";
         }
     ),
     array(
         'db' => 'last_name', 'dt' => 2,
         'formatter' => function ($d, $row) {
             $columnIndex = 2;
-            return "<span data-table-type='customer' data-column-index='$columnIndex' value='$d'>$d</span>";
+            return "<span data-table-type='customer' data-column-index='$columnIndex' value='" . htmlspecialchars($d, ENT_QUOTES, "UTF-8") . "'>$d</span>";
         }
     ),
     array(
         'db' => 'client_address', 'dt' => 3,
         'formatter' => function ($d, $row) {
             $columnIndex = 3;
-            return "<span data-table-type='customer' data-column-index='$columnIndex' value='$d'>$d</span>";
+            return "<span data-table-type='customer' data-column-index='$columnIndex' value='" . htmlspecialchars($d, ENT_QUOTES, "UTF-8") . "'>$d</span>";
         }
     ),
     array(
         'db' => 'date_added', 'dt' => 4,
         'formatter' => function ($d, $row) {
             $columnIndex = 4;
-            return "<span data-table-type='customer' data-column-index='$columnIndex' class='date' value='$d'> " . date('F d, Y', strtotime($d)) . " </span>";
+            return "<span data-table-type='customer' data-column-index='$columnIndex' class='date' value='" . htmlspecialchars($d, ENT_QUOTES, "UTF-8") . "'> " . date('F d, Y', strtotime($d)) . " </span>";
         }
     ),
     array(

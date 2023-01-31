@@ -41,7 +41,7 @@ $columns = array(
     array('db' => 'category_name', 'dt' => 1,
         'formatter' => function( $d, $row ) {
             $columnIndex = 1;
-            return "<span data-table-type='category' data-column-index='$columnIndex' value='$d'>$d</span>";
+            return "<span data-table-type='category' data-column-index='$columnIndex' value='" . htmlspecialchars($d, ENT_QUOTES, "UTF-8") . "'>$d</span>";
         }
     )
 );
