@@ -112,8 +112,8 @@ function custom_quickTable(tableIdentifier, data, tfoot) {
   }
   if (tfoot) {
     tfootHTML += `<tfoot><tr class='${tableElements["tr"]}'>`;
-    for (var i = 0; i < tfoot.length; i++) {
-      tfootHTML += `<td class='${tableElements["td"]}'>${tfoot[i]}</td>`;
+    for (var i = 0; i < columnNames.length; i++) {
+      tfootHTML += `<td class='${tableElements["td"]}'>${columnNames[i]}</td>`;
     }
     tfootHTML += "</tr></tfoot>";
   }
