@@ -1,3 +1,0 @@
-Product names with single quotes are buggy (e.g. "John Doe's Pen")
-    - can't rename properly
-    - product can't be clicked when selected in new order
