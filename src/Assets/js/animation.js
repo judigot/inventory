@@ -5,12 +5,12 @@
 
 //====================GENERAL====================//
 $(function () {
-    $(document).on("mouseenter mouseout", ".boo", function (e) {
-        $(this).toggleClass("flipY");
-    });
-    $(document).on("mouseenter mouseout", ".chopper", function (e) {
-        $(this).toggleClass("rotate360");
-    });
+  $(document).on("mouseenter mouseout", ".boo", function (e) {
+    $(this).toggleClass("flipY");
+  });
+  $(document).on("mouseenter mouseout", ".chopper", function (e) {
+    $(this).toggleClass("rotate360");
+  });
 });
 //====================GENERAL====================//
 
