@@ -162,8 +162,8 @@ function search_removeResult(elementId) {
 }
 
 function search_getResults(elementId, query) {
-  var element = $("#" + elementId);
-  var elementClass = element.attr("class");
+  var resultsContainer = $("#" + elementId);
+  var elementClass = resultsContainer.attr("class");
   var searchIdentifier;
 
   //=====CUSTOM=====//
@@ -192,7 +192,7 @@ function search_getResults(elementId, query) {
   })
     .done(function (data) {
       if (!data.length) {
-        element
+        resultsContainer
           .find(".search-result")
           .css({
             color: "white",
@@ -207,20 +207,21 @@ function search_getResults(elementId, query) {
       } else {
         var searchResults = "";
         for (var i = 0; i < data.length; i++) {
-          searchResults +=
-            "<div class='list-item' value='" +
-            data[i]["row_identifier"] +
-            "' data-row-id='" +
-            data[i]["row_id"] +
-            "' data-row-values='" +
-            JSON.stringify(data[i]) +
-            "'>" +
-            data[i]["row_identifier"] +
-            "</div>";
+          var resultItem = document.createElement("div");
+
+          resultItem.setAttribute("class", "list-item");
+          resultItem.setAttribute("value", data[i]["row_identifier"]);
+
+          resultItem.dataset.rowId = data[i]["row_id"];
+          resultItem.dataset.rowValues = JSON.stringify(data[i]);
+
+          // Set result identifier as div's text
+          resultItem.innerHTML = data[i]["row_identifier"];
+
+          resultsContainer.find(".result-list").append(resultItem);
         }
-        search_toggleResult(element);
-        element.find(".result-list").append(searchResults);
-        element.find(".result-list").css({ display: "block" });
+        search_toggleResult(resultsContainer);
+        resultsContainer.find(".result-list").css({ display: "block" });
         $(".list-item").css({
           padding: "5px 10px 5px 10px",
           "font-weight": "bold",
