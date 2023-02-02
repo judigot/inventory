@@ -37,8 +37,10 @@ if ($_POST || $_FILES) {
                 Database::create($connection, $app_order, $column, $Data);
 
                 // Insert to junction table
-                $result = Database::read($connection, "SELECT LAST_INSERT_ID() FROM `$app_order` WHERE `customer_id` = '$customerId'");
-                $orderId = $result[0]["LAST_INSERT_ID()"];
+                // $result = Database::read($connection, "SELECT LAST_INSERT_ID() FROM `$app_order` WHERE `customer_id` = '$customerId'");
+                // $orderId = $result[0]["LAST_INSERT_ID()"];
+                $result = Database::read($connection, "SELECT `order_id` FROM `app_order` WHERE `customer_id` = $customerId ORDER BY `order_id` DESC LIMIT 1;");
+                $orderId = $result[0]["order_id"];
                 $order = json_decode($_POST["data"]["order"], true);
                 $customerPrices = json_decode($_POST["data"]["customerPrices"], true);
                 $products = [];
