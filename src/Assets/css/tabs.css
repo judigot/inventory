@@ -1,7 +1,7 @@
 /* Style the tab */
 .tab {
-  overflow: hidden; }
-
+  overflow: hidden;
+}
 .tab button {
   width: calc(50% - 2px);
   min-width: 100px;
@@ -14,11 +14,12 @@
   transition: 0.2s;
   font-size: 20px;
   border-radius: 10px 10px 0px 0px;
-  pointer-events: none; }
-
+  pointer-events: none;
+}
 .tab button.activeTab {
   color: white;
-  background-color: #4476e4; }
-
+  background-color: #4476e4;
+}
 #secondTabContent {
-  display: none; }
+  display: none;
+}

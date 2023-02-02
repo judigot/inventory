@@ -1,8 +1,8 @@
 <?php
 
-require_once "scssphp-master/scss.inc.php";
+require_once "scssphp/scss.inc.php";
 
-use Leafo\ScssPhp\Compiler;
+use ScssPhp\ScssPhp\Compiler;
 
 $scss = new Compiler();
 
