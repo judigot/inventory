@@ -43,7 +43,7 @@ if ($_POST || $_FILES) {
                 $customerPrices = json_decode($_POST["data"]["customerPrices"], true);
                 $products = [];
                 $column = array("order_id", "product_id", "quantity", "product_cost", "product_price", "discount");
-                $sql;
+                $sql = "";
 
                 // Update stock
                 for ($i = 0; $i < count($order); $i++) {
