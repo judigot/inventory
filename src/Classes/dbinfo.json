@@ -1,7 +1,7 @@
 {
   "username": "root",
-  "password": "123",
-  "host": "MySQL",
+  "password": "",
+  "host": "localhost",
   "database": ["appjudigot_inventory"],
   "table": [
     "app_user",
