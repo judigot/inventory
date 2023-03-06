@@ -1,3 +1,5 @@
-# PHP Projects
+# Production
 
-Add PHP projects in this folder
+- Allow write permissions
+- Change localhost to IP address
+- Add user and password
