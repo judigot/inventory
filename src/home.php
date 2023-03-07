@@ -520,7 +520,7 @@ $notAllCaps = array("jumbo", "marble");
                                     <a class="settings-item" data-user-type="admin">Change admin password</a>
                                 </li>
                                 <li>
-                                    <a class="settings-item" data-user-type="secretary">Change secretary password</a>
+                                    <a class="settings-item" data-user-type="secretary">Change POS password</a>
                                 </li>
                             </ul>
                         </li>
