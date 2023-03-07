@@ -83,7 +83,7 @@ if ($_POST || $_FILES) {
         if (isset($_POST['read'])) {
 
             if ($_POST['read'] == "getAccessPermission") {
-                $isPermitted = $_SESSION["user"]["user_type"] === "administrator" ? true : false;
+                $isPermitted = $_SESSION["user-salesmaster"]["user_type"] === "administrator" ? true : false;
                 echo json_encode($isPermitted);
             }
 
@@ -230,8 +230,8 @@ if ($_POST || $_FILES) {
                 $Data = array();
                 if (Tools::verifyPassword($_POST["data"]["password"], $result[0]["password"])) {
                     if (Tools::verifyUser("dbinfo.json")) {
-                        $_SESSION["user"] = array("user_id" => $result[0]["user_id"], "username" => $result[0]["username"], "password" => $result[0]["password"], "user_type" => $result[0]["user_type"]);
-                        $_SESSION["username"] = $_SESSION["user"]["username"];
+                        $_SESSION["user-salesmaster"] = array("user_id" => $result[0]["user_id"], "username" => $result[0]["username"], "password" => $result[0]["password"], "user_type" => $result[0]["user_type"]);
+                        $_SESSION["username"] = $_SESSION["user-salesmaster"]["username"];
                         $Data[] = "success";
                     } else {
                         $Data[] = "invalid";
@@ -248,7 +248,7 @@ if ($_POST || $_FILES) {
         }
 
         if (isset($_POST['logoutUser'])) {
-            unset($_SESSION["user"]);
+            unset($_SESSION["user-salesmaster"]);
         }
         Database::disconnect($connection);
     } else {
