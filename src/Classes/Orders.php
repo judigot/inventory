@@ -78,7 +78,7 @@ $columns = array(
             $totalCost = 0;
             $totalProfit = 0;
 
-            if ($_SESSION["user"]["user_type"] === "administrator") {
+            if ($_SESSION["user-salesmaster"]["user_type"] === "administrator") {
                 $transaction = "<table class='main-order-table'>
                 <thead>
                     <tr>
@@ -115,7 +115,7 @@ $columns = array(
                 $transaction .= "</span>";
                 $transaction .= "</td>";
 
-                if ($_SESSION["user"]["user_type"] === "administrator") {
+                if ($_SESSION["user-salesmaster"]["user_type"] === "administrator") {
                     // Cost
                     $transaction .= "<td><span>₱ " . Tools::monetize(true, $value["product_cost"]) . "</span></td>";
                 }
@@ -133,7 +133,7 @@ $columns = array(
                 $transaction .= $discount > 0 ? " (₱ " . Tools::monetize(true, $discount) . " discount)" : false;
                 $transaction .= "</td>";
 
-                if ($_SESSION["user"]["user_type"] === "administrator") {
+                if ($_SESSION["user-salesmaster"]["user_type"] === "administrator") {
                     // Profit
                     if (true) {
                         $productProfit = ($value["quantity"] * ($value["product_price"] - $value["product_cost"])) - $discount;
@@ -147,12 +147,12 @@ $columns = array(
 
                 $transaction .= "</tr>";
             }
-            if ($_SESSION["user"]["user_type"] === "administrator") {
+            if ($_SESSION["user-salesmaster"]["user_type"] === "administrator") {
                 // Total profit
                 $transaction .= "<tr><td>Total: $totalItems</td><td></td><td></td><td></td><td>Total: <span class='order-price' data-total-profit='$totalProfit' value='" . Tools::monetize(false, $totalCost) . "'>₱ " . Tools::monetize(true, $totalCost) . "</span></td><td>Total: ₱ " . Tools::monetize(true, $totalProfit) . "</td></tr>";
                 // Centered total profit
                 //    $transaction .= "<tr><td colspan='6'>Total Profit: ₱ " . Tools::monetize(true, $totalProfit) . "</td></tr>";
-            } else if ($_SESSION["user"]["user_type"] !== "administrator") {
+            } else if ($_SESSION["user-salesmaster"]["user_type"] !== "administrator") {
                 $transaction .= "<tr><td>Total: $totalItems</td><td></td><td></td><td>Total: ₱ " . Tools::monetize(true, $totalCost) . "</td></tr>";
             }
 

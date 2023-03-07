@@ -26,7 +26,7 @@ $notAllCaps = array("jumbo", "marble");
     <script src="Assets/js/customer.js" type="text/javascript"></script>
 
     <?php
-    if ($_SESSION["user"]["user_type"] === "administrator") {
+    if ($_SESSION["user-salesmaster"]["user_type"] === "administrator") {
         ?>
         <script src="Assets/js/product.js" type="text/javascript"></script>
         <script src="Assets/js/productCategory.js" type="text/javascript"></script>
@@ -40,7 +40,7 @@ $notAllCaps = array("jumbo", "marble");
     <script src="Vendor/Plugins/DataTables-1.10.16/js/jquery.dataTables.js" type="text/javascript"></script>
     <script src="Assets/js/animation.js" type="text/javascript"></script>
     <?php
-    if ($_SESSION["user"]["user_type"] === "administrator") {
+    if ($_SESSION["user-salesmaster"]["user_type"] === "administrator") {
         ?>
         <script src="Assets/js/quickedit.js" type="text/javascript"></script>
         <script src="Assets/js/routes.js" type="text/javascript"></script>
@@ -283,7 +283,7 @@ $notAllCaps = array("jumbo", "marble");
                     <div class="dropdown-content">
                         <button id="newOrder" class="btn">Order</button>
                         <?php
-                        if ($_SESSION["user"]["user_type"] === "administrator") {
+                        if ($_SESSION["user-salesmaster"]["user_type"] === "administrator") {
                             ?>
                             <button id="newProduct" class="btn">Product</button>
                             <button id="newProductCategory" class="btn">Product Category</button>
@@ -299,7 +299,7 @@ $notAllCaps = array("jumbo", "marble");
                     <!-- <div data-content-trigger="custom-prices" class="content-selector">Custom Prices</div> -->
                 <?php } ?>
                 <?php
-                if ($_SESSION["user"]["user_type"] === "administrator") {
+                if ($_SESSION["user-salesmaster"]["user_type"] === "administrator") {
                     ?>
                     <div data-content-trigger="products" class="content-selector">
                         <span>Products</span>
@@ -311,7 +311,7 @@ $notAllCaps = array("jumbo", "marble");
                 <?php } ?>
                 <div data-content-trigger="customers" class="content-selector">Customers</div>
                 <?php
-                if ($_SESSION["user"]["user_type"] === "administrator") {
+                if ($_SESSION["user-salesmaster"]["user_type"] === "administrator") {
                     ?>
                     <div data-content-trigger="reports" class="content-selector">Reports</div>
                 <?php } ?>
@@ -347,7 +347,7 @@ $notAllCaps = array("jumbo", "marble");
                 </table>
 
                 <?php
-                if ($_SESSION["user"]["user_type"] === "administrator") {
+                if ($_SESSION["user-salesmaster"]["user_type"] === "administrator") {
                     ?>
                     <div id="financialSummaryBox"></div>
                 <?php } ?>
@@ -511,7 +511,7 @@ $notAllCaps = array("jumbo", "marble");
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <?php
-                    if ($_SESSION["user"]["user_type"] === "administrator") {
+                    if ($_SESSION["user-salesmaster"]["user_type"] === "administrator") {
                         ?>
                         <li class="dropdown">
                             <a href="home" class="dropdown-toggle" data-toggle="dropdown">Settings<span>&nbsp;</span><b class="caret"></b></a>
