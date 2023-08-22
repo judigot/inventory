@@ -1,7 +1,7 @@
 {
   "username": "root",
-  "password": "",
-  "host": "localhost",
+  "password": "123",
+  "host": "MySQL",
   "database": ["appjudigot_inventory"],
   "table": [
     "app_user",
@@ -13,5 +13,6 @@
   ],
   "appSettings": { "customPrice": false },
   "appName": "Sales Master Pro",
-  "appId": "inventory"
+  "appId": "inventory",
+  "licenseKey": "$2y$10$th5DDj8jgxXA5hd0dr1J5OOCssDv.4OJdYn5.s.kdBSjM46Fv.VkK"
 }
